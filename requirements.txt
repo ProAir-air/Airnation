@@ -31,6 +31,7 @@ grpc-google-iam-v1==0.14.1
 grpcio==1.70.0
 grpcio-status==1.70.0
 gspread==6.2.0
+gunicorn==23.0.0
 httplib2==0.22.0
 idna==3.10
 isodate==0.7.2
