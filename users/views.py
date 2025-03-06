@@ -45,7 +45,7 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 from django.http import JsonResponse
 
 from user_agents import parse
-import pytesseract
+
 
 from .models import (
     CustomUser,
