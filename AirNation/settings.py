@@ -20,7 +20,7 @@ import json
 from django.contrib.messages import constants as messages
 
 
-django_heroku.settings(locals())
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -125,8 +125,8 @@ TRACK_URLS = [rf"^{url}" for url in env.list("TRACK_URLS", default=[])]
 EXCLUDE_URLS = [rf"^{url}" for url in env.list("EXCLUDE_URLS", default=[])]
 
 # Static & Media Files
-STATIC_URL = env("STATIC_URL", default="/static/")
-STATIC_ROOT = os.path.join(BASE_DIR, env("STATIC_ROOT", default="staticfiles"))
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -202,12 +202,12 @@ WSGI_APPLICATION = 'AirNation.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 
 # Password validation
@@ -273,11 +273,12 @@ LOGIN_URL='login'
 
 
 # Database configuration for Heroku
-DATABASES['default'] = dj_database_url.config(
-    default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
-    conn_max_age=600
-)
-
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),  # Fallback to SQLite if DATABASE_URL is missing
+        conn_max_age=600,  # Optional: Improves performance by reusing database connections
+    )
+}
 
 
 CACHES = {
@@ -288,3 +289,4 @@ CACHES = {
 }
 
 
+django_heroku.settings(locals())
