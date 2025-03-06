@@ -1,0 +1,240 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+
+
+{% block content %}
+    <style>
+      
+    .main-content {
+        margin-left: 100px; /* Matches sidebar width */
+        margin-top: 10px; /* Matches header height */
+        padding: 2rem;
+        min-height: calc(100vh - 10px); /* Full height minus header */
+        
+    }
+
+    .intro-text {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 2rem auto;
+        font-size: 1.25rem;
+        color: #374151;
+    }
+
+    .saved-apps {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 items per row */
+        gap: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .app-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .app-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+    }
+
+    .app-content p {
+        color: #4b5563;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .app-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        margin: 1rem 0;
+    }
+
+    .app-metrics p {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .app-metrics i {
+        color: #4f46e5;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .button {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .view-button {
+        background: #4f46e5;
+        color: white;
+    }
+
+    .view-button:hover {
+        background: #4338ca;
+    }
+
+    .delete-button {
+        background: #ef4444;
+        color: white;
+    }
+
+    .delete-button:hover {
+        background: #dc2626;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .saved-apps {
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            margin-left: 0;
+            margin-top:10px;
+            padding:0;
+        }
+
+        .saved-apps {
+            grid-template-columns: 1fr; /* Single column for mobile */
+        }
+
+        .intro-text {
+            padding: 0;
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-content {
+            margin-top: 50px;
+        }
+
+        .app-card {
+            padding: 1rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+        }
+    }
+</style>
+    </style>
+
+
+    <main class="main-content">
+        <h3 class="intro-text">
+            Welcome to our comprehensive platform. Browse your saved apps below.
+        </h3>
+
+        <div class="saved-apps">
+            {% for saved in saved_apps %}
+                <div class="app-card" id="app-card-{{ saved.pk }}">
+                    
+                    <div class="app-content">
+                        <h3>{{ saved.app.title }}</h3>
+                        <p>{{ saved.app.description|safe}}</p>
+                    </div>
+
+                    <div class="app-metrics">
+                        <p><i class="fas fa-eye"></i> {{ saved.total_views|default:"0" }}</p>
+                        <p><i class="fas fa-bookmark"></i> {{ saved.total_saves|default:"0" }}</p>
+                        <p><i class="fas fa-download"></i> {{ saved.total_downloads|default:"0" }}</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <a href="{% url 'apps:app_detail' saved.pk %}" class="button view-button">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <button class="button delete-button" data-id="{{ saved.pk }}">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No saved apps yet.</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script>
+        $(document).ready(function () {
+            $(".delete-button").click(function () {
+                let button = $(this);
+                let appId = button.data("id");
+
+                if (!confirm("Are you sure you want to remove this app?")) {
+                    return;
+                }
+
+                $.ajax({
+                    url: `/apps/saved/delete/${appId}/`,
+                    type: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            $("#app-card-" + appId).fadeOut(300, function () {
+                                $(this).remove();
+                                if ($(".app-card").length === 0) {
+                                    $(".saved-apps").html("<p>No saved apps yet.</p>");
+                                }
+                            });
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error removing the app:", xhr.responseText);
+                        alert("An error occurred while removing the app.");
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
+{% endblock %}

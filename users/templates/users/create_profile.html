@@ -1,0 +1,180 @@
+<!-- templates/profiles/create_profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .profile-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .photo-upload {
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .photo-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px dashed #ddd;
+            margin: 0 auto 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .photo-preview i {
+            font-size: 40px;
+            color: #ddd;
+        }
+
+        .photo-input {
+            display: none;
+        }
+
+        .photo-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .photo-label:hover {
+            background-color: #0056b3;
+        }
+
+        .contributor-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <form class="profile-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1 class="form-title">Create Your Profile</h1>
+        
+        <div class="photo-upload">
+            <div class="photo-preview" id="photoPreview">
+                <i class="fas fa-user"></i>
+            </div>
+            <label class="photo-label">
+                <i class="fas fa-camera"></i> Choose Photo
+                <input type="file" name="photo" class="photo-input" id="photoInput" accept="image/*">
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="bio">
+                <i class="fas fa-pen"></i> Bio
+            </label>
+            <textarea name="bio" id="bio" placeholder="Tell us about yourself..."></textarea>
+        </div>
+
+        <div class="contributor-check">
+            <input type="checkbox" name="is_contributor" id="isContributor">
+            <label for="isContributor">
+                <i class="fas fa-star"></i> Register as Contributor
+            </label>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-check"></i> Create Profile
+        </button>
+    </form>
+
+    <script>
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.style.backgroundImage = `url(${e.target.result})`;
+                    photoPreview.innerHTML = ''; // Remove the icon
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

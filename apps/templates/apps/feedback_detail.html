@@ -1,0 +1,251 @@
+{% extends 'apps/base.html' %}
+{% block title %}Feedback Detail - {{ block.super }}{% endblock %}
+
+{% block content %}
+<style>
+    .feedback-detail-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .feedback-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .feedback-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 1rem;
+    }
+
+    .feedback-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .feedback-type, .feedback-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        background-color: #f3f4f6;
+    }
+
+    .feedback-content {
+        margin: 2rem 0;
+    }
+
+    .feedback-description {
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .feedback-attachment {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+    }
+
+    .feedback-attachment h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .feedback-attachment a {
+        color: #2563eb;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .feedback-attachment a:hover {
+        text-decoration: underline;
+    }
+
+    .browser-info {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+    }
+
+    .browser-info h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .browser-info pre {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+    }
+
+    .feedback-responses {
+        margin-top: 3rem;
+    }
+
+    .feedback-responses h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #1a1a1a;
+    }
+
+    .response {
+        margin-left: 2rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .response.internal {
+        background-color: #f8fafc;
+        border-left: 4px solid #2563eb;
+    }
+
+    .response-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .response-author {
+        font-weight: 600;
+    }
+
+    .response-content {
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .response-form {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+    }
+
+    .response-form textarea {
+        width: 100%;
+        min-height: 100px;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.25rem;
+    }
+
+    .response-form button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+    }
+
+    .response-form button:hover {
+        background-color: #1d4ed8;
+    }
+
+    @media (max-width: 640px) {
+        .feedback-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .response {
+            margin-left: 0;
+        }
+    }
+</style>
+<div class="feedback-detail-container">
+    <div class="feedback-header">
+        <h2>{{ feedback.subject }}</h2>
+        <div class="feedback-meta">
+            <span class="feedback-type">{{ feedback.get_feedback_type_display }}</span>
+            <span class="feedback-status">{{ feedback.get_status_display }}</span>
+            <span class="feedback-date">
+                <i class="fas fa-calendar"></i>
+                Submitted on {{ feedback.created_at|date }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="feedback-content">
+        <div class="feedback-description">
+            {{ feedback.description|linebreaks }}
+        </div>
+        
+        {% if feedback.attachment %}
+        <div class="feedback-attachment">
+            <h4>Attachment</h4>
+            <a href="{{ feedback.attachment.url }}" target="_blank">
+                <i class="fas fa-paperclip"></i> View Attachment
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if feedback.browser_info %}
+        <div class="browser-info">
+            <h4>System Information</h4>
+            <pre>{{ feedback.browser_info|pprint }}</pre>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if user.is_staff or user == feedback.user %}
+    <div class="feedback-responses">
+        <h3>Responses</h3>
+        {% for response in feedback.responses.all %}
+            <div class="response {% if response.is_internal and user.is_staff %}internal{% endif %}">
+                <div class="response-meta">
+                    <span class="response-author">
+                        <i class="fas fa-user"></i>
+                        {{ response.responder }}
+                    </span>
+                    <span class="response-date">
+                        <i class="fas fa-clock"></i>
+                        {{ response.created_at|date }}
+                    </span>
+                </div>
+                <div class="response-content">
+                    {{ response.response|linebreaks }}
+                </div>
+            </div>
+        {% empty %}
+            <p>No responses yet.</p>
+        {% endfor %}
+        
+        {% if user.is_staff %}
+        <form method="post" class="response-form">
+            {% csrf_token %}
+            {{ response_form }}
+            <button type="submit">
+                <i class="fas fa-reply"></i> Add Response
+            </button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

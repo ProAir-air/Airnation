@@ -1,0 +1,65 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .overall-stats {
+            margin-bottom: 40px;
+        }
+        .overall-stats h2 {
+            margin-bottom: 10px;
+        }
+        .overall-stats p {
+            margin: 5px 0;
+        }
+    </style>
+
+    <h1>Statistics Dashboard</h1>
+
+    <!-- Overall Statistics -->
+    <div class="overall-stats">
+        <h2>Overall Statistics</h2>
+        <p><strong>Total Posts:</strong> {{ overall_stats.total_posts }}</p>
+        <p><strong>Total Pop-ups Shown:</strong> {{ overall_stats.total_popup_shown }}</p>
+        <p><strong>Total Pop-ups Closed:</strong> {{ overall_stats.total_popup_closed }}</p>
+        <p><strong>Total Pop-ups Clicked:</strong> {{ overall_stats.total_popup_clicked }}</p>
+        <p><strong>Total Pop-ups Auto-closed:</strong> {{ overall_stats.total_popup_auto_closed }}</p>
+    </div>
+
+    <!-- Post-specific Statistics -->
+    <h2>Post-specific Statistics</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Post Title</th>
+                <th>Total Shown</th>
+                <th>Total Closed</th>
+                <th>Total Clicked</th>
+                <th>Total Auto-closed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts_with_stats %}
+            <tr>
+                <td><a href="{% url 'ProAir:post_detail' post.id %}">{{ post.title }}</a></td>
+                <td>{{ post.interaction_stats.total_shown }}</td>
+                <td>{{ post.interaction_stats.total_closed }}</td>
+                <td>{{ post.interaction_stats.total_clicked }}</td>
+                <td>{{ post.interaction_stats.total_auto_closed }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% endblock  %}

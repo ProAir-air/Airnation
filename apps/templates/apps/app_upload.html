@@ -1,0 +1,534 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+<style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+        }
+        .upload-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-container {
+            position: relative;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .input-container:hover {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+        }
+
+        .input-container:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+            background-color: #ffffff;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .decimal-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.875rem;
+            color: #1f2937;
+            outline: none;
+        }
+
+        .currency-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.875rem;
+            color: #1f2937;
+            outline: none;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .status-text {
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .preview-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .preview-video {
+            max-width: 100%;
+            max-height: 400px;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+
+        .youtube-preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+
+    <div class="upload-container">
+        <h1><i class="fas fa-upload"></i> Upload App</h1>
+        <form method="post" enctype="multipart/form-data" id="uploadForm" action="{% url 'apps:app_upload' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_title">Title</label>
+                {{ form.title }}
+            </div>  
+
+            <div class="form-group">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_category">Category</label>
+                {{ form.category }}
+            </div>
+
+            <div class="file-input-container">
+                <label for="id_thumbails">Thumbnail</label>
+                <input type="file" id="id_thumbails" name="thumbails" class="file-input" accept="image/*">
+                <div class="preview-container" id="thumbnailPreview">
+                    <img class="preview-image" src="" alt="Thumbnail preview">
+                </div>
+            </div>
+
+            <div class="file-input-container">
+                <label for="id_video">Video</label>
+                <input type="file" id="id_video" name="video" class="file-input" accept="video/*">
+                <div class="preview-container" id="videoPreview">
+                    <video class="preview-video" controls></video>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_youtube_link">YouTube Link</label>
+                {{ form.youtube_link }}
+                <div class="youtube-preview" id="youtubePreview"></div>
+            </div>
+
+            <div class="file-input-container">
+                <label for="id_app_file">App File</label>
+                <input type="file" id="id_app_file" name="app_file" class="file-input" accept=".apk,.ipa,.exe">
+            </div>
+
+            <div class="form-group">
+                <label for="id_google_drive_link">Google Drive Link</label>
+                {{ form.google_drive_link }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_amount">Amount</label>
+                <div class="input-container">
+                    <input type="number" 
+                           id="id_amount" 
+                           name="amount" 
+                           step="0.01" 
+                           class="decimal-input" 
+                           placeholder="Enter amount">
+                </div>
+            </div>
+    
+            <!-- Currency Field -->
+            <div class="form-group">
+                <label for="id_currency">Currency</label>
+                <div class="input-container">
+                    <input type="text" 
+                           id="id_currency" 
+                           name="currency" 
+                           class="currency-input" 
+                           placeholder="Enter currency name">
+                </div>
+            </div>
+            
+    
+            <!-- Banned Status -->
+            <div class="form-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="id_banned" name="banned">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="status-text">Banned Status</span>
+                </div>
+            </div>
+    
+            <!-- Send Notification -->
+            <div class="form-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="id_send_notification" name="send_notification">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="status-text">Send Notification</span>
+                </div>
+            </div>
+    
+            <!-- Read Status 
+            <div class="form-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="id_read" name="read">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="status-text">Read Status</span>
+                </div>
+            </div>
+            -->
+    
+            <!-- Premium Status 
+            <div class="form-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="id_premium" name="premium">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="status-text">Premium Status</span>
+                </div>
+            </div>
+            -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="upload-speed">0 MB/s</span>
+                    <span class="time-remaining">Calculating...</span>
+                    <span class="percentage">0%</span>
+                </div>
+            </div>
+
+            <div class="error-message"></div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-cloud-upload-alt"></i> Upload App
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           
+            const thumbnailInput = document.getElementById('id_thumbails');
+            const videoInput = document.getElementById('id_video');
+            const youtubeInput = document.getElementById('id_youtube_link');
+            const form = document.getElementById('uploadForm');
+            const progressBar = document.querySelector('.progress');
+            const progressContainer = document.querySelector('.progress-container');
+            const uploadSpeed = document.querySelector('.upload-speed');
+            const timeRemaining = document.querySelector('.time-remaining');
+            const percentage = document.querySelector('.percentage');
+            const errorMessage = document.querySelector('.error-message');
+            // Thumbnail preview
+            thumbnailInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.querySelector('#thumbnailPreview');
+                        const img = preview.querySelector('img');
+                        img.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Video preview
+            videoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const preview = document.querySelector('#videoPreview');
+                    const video = preview.querySelector('video');
+                    video.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+                }
+            });
+
+            // YouTube preview
+            youtubeInput.addEventListener('input', function(e) {
+                const youtubePreview = document.getElementById('youtubePreview');
+                const url = e.target.value;
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    const videoId = extractYoutubeId(url);
+                    if (videoId) {
+                        youtubePreview.innerHTML = `
+                            <iframe width="100%" height="315" 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>`;
+                        youtubePreview.style.display = 'block';
+                    }
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Reset error message and show progress container
+                errorMessage.style.display = 'none';
+                progressContainer.style.display = 'block';
+                
+                const formData = new FormData(form);
+                const xhr = new XMLHttpRequest();
+                const startTime = Date.now();
+
+                // Get CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        const duration = (Date.now() - startTime) / 1000;
+                        const bps = e.loaded / duration;
+                        const remaining = (e.total - e.loaded) / bps;
+
+                        progressBar.style.width = percent + '%';
+                        uploadSpeed.textContent = formatSpeed(bps);
+                        timeRemaining.textContent = formatTime(remaining);
+                        percentage.textContent = Math.round(percent) + '%';
+                    }
+                });
+
+                xhr.addEventListener('load', function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.status === 'success' && response.pk) {
+                                window.location.href = `/apps/preview/${response.pk}/`;
+                            } else if (response.status === 'error') {
+                                errorMessage.textContent = 'Validation error: ' + JSON.stringify(response.errors);
+                                errorMessage.style.display = 'block';
+                            } else {
+                                errorMessage.textContent = 'Unexpected response format';
+                                errorMessage.style.display = 'block';
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                            errorMessage.textContent = 'Error processing server response';
+                            errorMessage.style.display = 'block';
+                        }
+                    } else {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage.textContent = response.errors ? 
+                                'Validation errors: ' + JSON.stringify(response.errors) :
+                                `Upload failed with status ${xhr.status}. Please try again.`;
+                        } catch (e) {
+                            errorMessage.textContent = `Upload failed with status ${xhr.status}. Please try again.`;
+                        }
+                        errorMessage.style.display = 'block';
+                    }
+                });
+
+                xhr.addEventListener('error', function() {
+                    errorMessage.textContent = 'Network error occurred. Please check your connection and try again.';
+                    errorMessage.style.display = 'block';
+                });
+
+                // Add the X-Requested-With header
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('X-CSRFToken', csrfToken);
+                xhr.send(formData);
+            });
+
+            function formatSpeed(bps) {
+                const mbps = bps / (1024 * 1024);
+                return mbps.toFixed(2) + ' MB/s';
+            }
+
+            function formatTime(seconds) {
+                if (seconds < 60) return Math.round(seconds) + ' seconds';
+                const minutes = Math.floor(seconds / 60);
+                return minutes + ' minutes';
+            }
+
+            // Utility functions
+            function extractYoutubeId(url) {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+            }
+
+            function formatSpeed(bps) {
+                const mbps = bps / (1024 * 1024);
+                return mbps.toFixed(2) + ' MB/s';
+            }
+
+            function formatTime(seconds) {
+                if (seconds < 60) return Math.round(seconds) + ' seconds';
+                const minutes = Math.floor(seconds / 60);
+                return minutes + ' minutes';
+            }
+
+
+            
+    CKEDITOR.replace('id_description', {
+        toolbar: [
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['TextColor', 'BGColor'],  // Add color options
+            ['NumberedList', 'BulletedList', 'Outdent', 'Indent'],
+            ['RemoveFormat']  // Removed 'Link', 'Unlink', 'Source'
+        ],
+        removePlugins: 'image,uploadfile',
+        allowedContent: true,
+    });
+
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 1.5rem;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #1a202c;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        
+        .analytics-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .analytics-table th,
+        .analytics-table td {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        
+        .analytics-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #1a202c;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .analytics-table td {
+            vertical-align: top;
+        }
+        
+        .stat-value {
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+        .stat-icon {
+            margin-right: 0.5rem;
+            width: 20px;
+            color: #3498db;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: #def7ec;
+            color: #046c4e;
+        }
+        
+        .badge-danger {
+            background: #fde8e8;
+            color: #c81e1e;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background: #edf2f7;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .device-stat {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.875rem;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        @media (max-width: 768px) {
+            .analytics-table {
+                font-size: 0.875rem;
+            }
+            
+            .analytics-table th,
+            .analytics-table td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <h1 class="app-title"><i class="fas fa-chart-line stat-icon"></i>{{ app.title }} - Analytics Dashboard</h1>
+        
+        <table class="analytics-table">
+            <tr>
+                <th><i class="fas fa-info-circle stat-icon"></i>Basic Info</th>
+                <th><i class="fas fa-eye stat-icon"></i>Views</th>
+                <th><i class="fas fa-download stat-icon"></i>Downloads</th>
+                <th><i class="fas fa-star stat-icon"></i>Feedback</th>
+                <th><i class="fas fa-thumbs-up stat-icon"></i>Reactions</th>
+                <th><i class="fas fa-link stat-icon"></i>Links</th>
+                <th>Copy Link</th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="stat-group">
+                        <p><strong>Status:</strong>
+                            {% if app.approved %}<span class="badge badge-success">Approved</span>{% endif %}
+                            {% if app.banned %}<span class="badge badge-danger">Banned</span>{% endif %}
+                        </p>
+                        <p><strong>Video Size:</strong> {{ app.video_size|filesizeformat }}</p>
+                        <p><strong>Duration:</strong> {{ app.youtube_duration }}</p>
+                        <p><strong>YouTube Stats:</strong></p>
+                        <div class="stat-value">Views: {{ app.youtube_views_count }}</div>
+                        <div class="stat-value">Comments: {{ app.youtube_comments_count }}</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-group">
+                        <p class="stat-value">Total: {{ view_analytics.total_views }}</p>
+                        <div class="device-stat">
+                            <i class="fas fa-desktop stat-icon"></i>
+                            <span>Desktop: {{ view_analytics.desktop_views|default:0|floatformat:1 }}%</span>
+                        </div>
+                        <div class="device-stat">
+                            <i class="fas fa-mobile-alt stat-icon"></i>
+                            <span>Mobile: {{ view_analytics.mobile_views|default:0|floatformat:1 }}%</span>
+                        </div>
+                        <div class="device-stat">
+                            <i class="fas fa-tablet-alt stat-icon"></i>
+                            <span>Tablet: {{ view_analytics.tablet_views|default:0|floatformat:1 }}%</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-group">
+                        <p class="stat-value">Total: {{ download_analytics.total_downloads }}</p>
+                        <p class="stat-value">Size: {{ download_analytics.total_download_size|filesizeformat }}</p>
+                        {% for os in download_os %}
+                        <div class="device-stat">
+                            <i class="fas fa-laptop stat-icon"></i>
+                            <span>{{ os.os|default:'Unknown' }}: {{ os.percentage|floatformat:1 }}%</span>
+                        </div>
+                        {% endfor %}
+                        <p class="stat-label">Formats:</p>
+                        {% for format in download_formats %}
+                        <div class="device-stat">
+                            <i class="fas fa-file stat-icon"></i>
+                            <span>{{ format.download_format|default:'Unknown' }}: {{ format.percentage|floatformat:1 }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-group">
+                        <p class="stat-value">Total: {{ feedback_analytics.total_feedback }}</p>
+                        <p class="stat-value">Average: {{ feedback_analytics.avg_rating|floatformat:1 }}/5.0</p>
+                        {% for rating in rating_distribution %}
+                        <div class="device-stat">
+                            <i class="fas fa-star stat-icon"></i>
+                            <span>{{ rating.rating }} Star(s): {{ rating.percentage|floatformat:1 }}%</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ rating.percentage }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-group">
+                        <p class="stat-value">Total: {{ reaction_analytics.total_reactions }}</p>
+                        <div class="device-stat">
+                            <i class="fas fa-thumbs-up stat-icon"></i>
+                            <span>Likes: {{ reaction_analytics.likes }}</span>
+                        </div>
+                        <div class="device-stat">
+                            <i class="fas fa-thumbs-down stat-icon"></i>
+                            <span>Dislikes: {{ reaction_analytics.dislikes }}</span>
+                        </div>
+                        <div class="device-stat">
+                            <i class="fas fa-minus-circle stat-icon"></i>
+                            <span>Neutral: {{ reaction_analytics.neutral }}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="stat-group">
+                        <p class="stat-value">Total Clicks: {{ link_analytics.total_clicks }}</p>
+                        <div class="device-stat">
+                            <i class="fab fa-youtube stat-icon"></i>
+                            <span>YouTube: {{ link_analytics.youtube_clicks }}</span>
+                        </div>
+                        <div class="device-stat">
+                            <i class="fab fa-google-drive stat-icon"></i>
+                            <span>Drive: {{ link_analytics.drive_clicks }}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-primary" 
+                    onclick="navigator.clipboard.writeText('{{ app_detail_url }}').then(() => alert('Link copied to clipboard!'))">
+                    Copy Link
+                    </button>
+                </td>
+   
+            </tr>
+        </table>
+    </div>
+
+{% endblock  %}

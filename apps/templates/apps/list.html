@@ -1,0 +1,690 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+{% block content %}
+<style>
+       /*modal for request form submission*/
+       .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    /* Close button */
+    .close {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 22px;
+        cursor: pointer;
+        color: red;
+    }
+
+    /* Success message */
+    .success-message {
+        display: none;
+        color: green;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Styling for the button */
+    .trigger-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    .trigger-button i {
+        font-size: 32px;
+        color: blue;
+        cursor: pointer;
+    }
+
+    .trigger-button i:hover {
+        color: darkblue;
+    }
+
+    /* Input and Textarea Styles */
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+        /*end of the modal form submission*/
+
+    /* Search Section Styles */
+.search-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.search-form {
+    width: 100%;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-wrapper {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    padding: 0 16px;
+    height: 44px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.search-input-wrapper:hover,
+.search-input-wrapper:focus-within {
+    box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+    border-color: rgba(223,225,229,0);
+}
+
+.search-icon {
+    color: #9aa0a6;
+    display: flex;
+    align-items: center;
+    padding-right: 8px;
+}
+
+.search-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 0;
+    font-size: 16px;
+    background: transparent;
+    color: #3c4043;
+}
+
+.search-input::placeholder {
+    color: #9aa0a6;
+}
+
+.clear-search {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 8px;
+    cursor: pointer;
+    color: #9aa0a6;
+    display: flex;
+    align-items: center;
+}
+
+.clear-search:hover {
+    color: #3c4043;
+}
+
+.clear-search.hidden {
+    display: none;
+}
+
+.search-button {
+    background: #f8f9fa;
+    border: 1px solid #f8f9fa;
+    border-radius: 24px;
+    padding: 0 16px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 100px;
+    color: #3c4043;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+    background-color: #f8f9fa;
+    border: 1px solid #dadce0;
+    color: #202124;
+}
+
+.search-button-text {
+    font-weight: 500;
+}
+
+.search-button-icon {
+    display: none;
+}
+
+
+.no-application {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f7fafc; /* Light background color */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    margin-top: 2rem;
+}
+
+.no-application p {
+    font-size: 1.2rem;
+    color: #4a5568; /* Dark gray color */
+    margin-bottom: 1rem;
+}
+
+.request-link {
+    font-size: 1.1rem;
+    color: #4f46e5; /* Primary color */
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid #4f46e5;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* Space between the icon and text */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.request-link:hover {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.request-link i {
+    font-size: 1.3rem; /* Adjust the icon size */
+}
+
+
+/* Category Filter Styles */
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.category-btn {
+    padding: 4px 6px;
+    background: rgb(178, 214, 203);
+    border: 1px solid #dfe1e5;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #3c4043;
+}
+
+.category-btn:hover {
+    background: #f8f9fa;
+    border-color: #dadce0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+
+.category-btn.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.search-results-info {
+    padding: 1rem;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+    .search-wrapper {
+        gap: 0.25rem;
+    }
+
+    .search-button {
+        padding: 0 12px;
+        min-width: auto;
+    }
+
+    .search-button-text {
+        display: none;
+    }
+
+    .search-button-icon {
+        display: block;
+    }
+
+    .category-filter {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .category-filter::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.apps-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+    
+            /* Card styling */
+            .app-card {
+                background: rgb(201, 206, 182);
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                transition: transform 0.2s;
+                overflow: hidden;
+                height: 100%;
+            }
+    
+            .app-card:hover {
+                transform: translateY(-4px);
+            }
+    
+            .app-card-content {
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+    
+            /* Title styling */
+            .app-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+    
+            .app-title a {
+                color: #333;
+                text-decoration: none;
+            }
+    
+            .app-title a:hover {
+                color: #007bff;
+            }
+    
+            /* Thumbnail styling */
+            .app-thumbnail-container {
+                position: relative;
+                width: 100%;
+                padding-top: 56.25%; /* 16:9 Aspect Ratio */
+                margin-bottom: 1rem;
+                background: #f0f0f0;
+                border-radius: 0.25rem;
+                overflow: hidden;
+            }
+    
+            .app-thumbnail {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+    
+            /* Stats styling */
+            .app-stats {
+                display: flex;
+                justify-content: space-around;
+                padding: 1rem 0;
+                border-top: 1px solid #eee;
+                border-bottom: 1px solid #eee;
+                margin: 1rem 0;
+            }
+    
+            .stat-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #666;
+            }
+    
+            .stat-item i {
+                font-size: 1rem;
+            }
+    
+            /* Action buttons styling */
+            .app-actions {
+                display: flex;
+                gap: 1rem;
+                margin-top: auto;
+            }
+    
+            .action-btn {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 0.75rem;
+                border: none;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+    
+            .download-btn {
+                background-color: #007bff;
+                color: white;
+            }
+    
+            .download-btn:hover {
+                background-color: #0056b3;
+            }
+    
+            .save-btn {
+                background-color: #f8f9fa;
+                color: #333;
+                border: 1px solid #dee2e6;
+            }
+    
+            .save-btn:hover {
+                background-color: #e2e6ea;
+            }
+    
+            .save-btn.saved {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+            }
+    
+            /* Responsive design */
+            @media (max-width: 768px) {
+                .main-content {
+                    margin-left: 0;
+                    width: 100%;
+                }
+    
+                .apps-grid {
+                    grid-template-columns: 1fr;
+                    padding: 1rem;
+                }
+    
+                .app-actions {
+                    flex-direction: column;
+                }
+    
+                .action-btn {
+                    width: 100%;
+                }
+            }
+    
+            /* Medium screens */
+            @media (min-width: 769px) and (max-width: 1200px) {
+                .apps-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+    
+            /* Large screens */
+            @media (min-width: 1201px) {
+                .apps-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+          
+</style>
+    <div class="search-section">
+        <form method="get" class="search-form">
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <div class="search-input-wrapper">
+                        <!-- Search Icon -->
+                        <div class="search-icon">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            </svg>
+                        </div>
+
+                        <!-- Search Input -->
+                        <input 
+                            type="text" 
+                            name="q" 
+                            class="search-input" 
+                            id="search-input" 
+                            placeholder="Search " 
+                            value="{{ request.GET.q }}" 
+                            autocomplete="off"
+                        >
+
+                        <!-- Clear Search -->
+                        <button type="button" class="clear-search hidden" id="clearSearch">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Search Button -->
+                    <button type="submit" class="search-button">
+                        <span class="search-button-text">Search</span>
+                        <svg class="search-button-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Filter Buttons -->
+    <div class="category-filter">
+        <button class="category-btn active" data-category="all">All</button>
+        {% for key, value in categories.items %}
+            <button class="category-btn" data-category="{{ key }}">{{ value }}</button>
+        {% endfor %}
+    </div>
+
+    {% if search_query %}
+    <div class="search-results-info">
+        Found {{ total_results }} result{{ total_results|pluralize }} for "{{ search_query }}"
+    </div>
+    {% endif %}
+
+    <div class="apps-grid">
+        {% for app in apps %}
+        <div class="app-card">
+            <div class="app-card-content">
+                <h2 class="app-title">
+                    <a href="{% url 'apps:app_detail' app.id %}">{{ app.title }}</a>
+                </h2>
+                
+                <div class="app-thumbnail-container">
+                    {% if app.thumbails %}
+                        <img src="{{ app.thumbails.url }}" alt="{{ app.title }}" class="app-thumbnail">
+                    {% else %}
+                        <div class="app-thumbnail-placeholder"></div>
+                    {% endif %}
+                </div>
+
+                <div class="app-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span>{{ app.save_count|default:0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-chart-simple"></i>
+                        <span>{{ app.view_count|default:0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>{{ app.download_count|default:0 }}</span>
+                    </div>
+                </div>
+
+                <div class="app-actions">
+                   
+                   
+                    <button class="action-btn save-btn {% if app.id in saved_apps %}saved{% endif %}" 
+                            data-app-id="{{ app.id }}">
+                        <i class="fas fa-bookmark"></i>
+                        Save
+                    </button>
+                </div>
+                <div class="app-actions" >
+                     <!-- Pay with PesaPal Button -->
+                <a href="{% url 'apps:purchase_app' app.id %}" class="action-btn pay-btn">
+                    <i class="fas fa-credit-card"></i>
+                    Pay with PesaPal
+                </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-application">
+            <p>No application found</p>
+            <a href="{% url 'apps:submit_request' %}" class="request-link">
+                <i class="fas fa-folder-open"></i> Request
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Category filtering
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const appCards = document.querySelectorAll('.app-card');
+    
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    const appsGrid = document.querySelector('.apps-grid'); // Get the apps grid container
+                    const requestButton = document.querySelector('.no-application .request-link'); // Get the Request button
+
+                    // Update active button
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter apps
+                    appCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                            
+                            if (!document.querySelector('.no-application')) {
+                                const noApplicationDiv = document.createElement('div');
+                                noApplicationDiv.classList.add('no-application');
+                                noApplicationDiv.innerHTML = `
+                                    <p>No application found</p>
+                                    <a href="{% url 'apps:submit_request' %}" class="request-link">
+                                        <i class="fas fa-folder-open"></i> Request
+                                    </a>
+                                `;
+                                appsGrid.appendChild(noApplicationDiv); // Append it inside the apps-grid
+                            }
+                        }
+                    });
+                });
+            });
+    
+            // Save button functionality
+            $('.save-btn').on('click', function(e) {
+        e.preventDefault();
+        
+        const button = $(this);
+        const appId = button.data('app-id');
+        
+        $.ajax({
+            url: `/apps/${appId}/toggle-save/`,  // Adjust the URL pattern if needed
+            type: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')  // Django CSRF token
+            },
+            success: function(response) {
+                if (response.status === 'saved') {
+                    button.addClass('saved');
+                    button.html('<i class="fas fa-bookmark"></i> Saved');
+                } else if (response.status === 'unsaved') {
+                    button.removeClass('saved');
+                    button.html('<i class="fas fa-bookmark"></i> Save');
+                }
+            },
+            error: function(xhr, errmsg, err) {
+                console.error('Error:', errmsg);
+            }
+        });
+    });
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+       
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,26 @@
+<!-- templates/post_detail.html -->
+{% extends 'ProAir/base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ post.title }}</h1>
+    
+    {% if post.thumbails %}
+    <img src="{{ post.thumbails.url }}" alt="{{ post.title }}" class="img-fluid">
+    {% endif %}
+    
+    <div class="description">
+        {{ post.description|linebreaks }}
+    </div>
+
+    {% if post.youtube_link %}
+    <div class="youtube-info">
+        <p>Views: {{ post.youtube_views_count }}</p>
+        <p>Comments: {{ post.youtube_comments_count }}</p>
+        <p>Duration: {{ post.youtube_duration }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

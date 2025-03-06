@@ -1,0 +1,78 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+
+<title>{% block title %}User Activity{% endblock %}</title>
+
+{% block analytics %}
+<h1>Activity Overview for {{ user.username }}</h1>
+
+<div class="user-info">
+    {% if user.profile.photo %}
+        <img src="{{ user.profile.photo.url }}" alt="{{ user.username }}" class="user-photo">
+    {% else %}
+        <p>No profile photo available</p>
+    {% endif %}
+    <div class="user-details">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Total Time Spent:</strong> {{ total_time_spent|floatformat:2 }} seconds</p>
+        <p><strong>Total Pages Visited:</strong> {{ total_pages_visited }}</p>
+        <p><strong>Most Visited Pages:</strong></p>
+        <ul>
+            {% for page in most_visited_pages %}
+                <li>{{ page.page_url }} ({{ page.count }} visits)</li>
+            {% endfor %}
+        </ul>
+        <p><strong>Least Visited Pages:</strong></p>
+        <ul>
+            {% for page in least_visited_pages %}
+                <li>{{ page.page_url }} ({{ page.count }} visits)</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<h3>Historical Activity (24-Hour Intervals)</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Visits</th>
+            <th>Total Duration (seconds)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in interval_records %}
+            <tr>
+                <td>{{ record.interval_start|date:"F j, Y" }}</td>
+                <td>{{ record.visit_count }}</td>
+                <td>{{ record.total_duration|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<h3>Time Spent on Each Page</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Page URL</th>
+            <th>Duration (seconds)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for page_url, duration in page_durations.items %}
+            <tr>
+                <td>{{ page_url }}</td>
+                <td>{{ duration|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+{% endblock %}
+
+
+
+{% endblock %}

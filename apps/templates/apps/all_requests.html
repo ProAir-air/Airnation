@@ -1,0 +1,177 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block title %}All Requests - Air Nation Music{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>All Requests</h2>
+    
+    <div class="stats-overview">
+        <div class="stat-card">
+            <h3>Unresponded</h3>
+            <p class="stat-number">{{ unresponded_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Responded</h3>
+            <p class="stat-number">{{ responded_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total</h3>
+            <p class="stat-number">{{ total_requests }}</p>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="{% url 'apps:unresponded_requests' %}" class="nav-link">View Unresponded</a>
+        <a href="{% url 'apps:responded_requests' %}" class="nav-link">View Responded</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Application Name</th>
+                <th>User</th>
+                <th>Description</th>
+                <th>Phone Number</th>
+                <th>WhatsApp</th>
+                <th>Requested On</th>
+                <th>Status</th>
+                <th>Response</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ request.app_name }}</td>
+                    <td>{{ request.user.username }}</td>
+                    <td>{{ request.description }}</td>
+                    <td>{{ request.phone_number|default:"N/A" }}</td>
+                    <td>
+                        {% if request.whatsapp_number %}
+                            <a href="https://wa.me/{{ request.whatsapp_number|cut:'+' }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-whatsapp"></i> Chat
+                            </a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ request.timestamp|date:"F j, Y, g:i a" }}</td>
+                    <td>
+                        {% if request.adminresponse %}
+                            <span class="responded">✅ Responded</span>
+                        {% else %}
+                            <span class="not-responded">❌ Not Responded</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if request.adminresponse %}
+                            {{ request.adminresponse.response_text }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'apps:admin_respond' request.id %}" class="respond-btn">
+                            {% if request.adminresponse %}Edit Response{% else %}Respond{% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="10" style="text-align: center;">No requests found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+     .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .stats-overview {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+        min-width: 200px;
+    }
+
+    .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin: 10px 0;
+    }
+
+    .nav-links {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .nav-link {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-left: 10px;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background: #007bff;
+        color: white;
+    }
+
+    .respond-btn {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .respond-btn:hover {
+        background: #218838;
+    }
+
+    .responded {
+        color: green;
+        font-weight: bold;
+    }
+    
+    .not-responded {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

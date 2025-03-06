@@ -1,0 +1,439 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Homepage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-bg: #f5f6fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        /* Navigation Styles */
+        nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-icon {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--light-bg);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin: 0 20px;
+        }
+
+        .search-input {
+            padding: 8px 15px;
+            border: 2px solid var(--light-bg);
+            border-radius: 20px;
+            width: 300px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--secondary-color);
+        }
+
+        .search-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background: var(--primary-color);
+        }
+
+        /* Showcase Area */
+        .showcase {
+            margin-top: 80px;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .showcase-item.active {
+            opacity: 1;
+        }
+
+        .showcase-item img,
+        .showcase-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Services Section */
+        .services {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .service-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .service-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-container {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .showcase {
+                height: 300px;
+            }
+        }
+
+        /* Menu Toggle for Mobile */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                width: 100%;
+            }
+
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo">
+                <img src="{% static 'img/logo.png' %}" alt="Logo">
+                YourSiteName
+            </a>
+            
+            <div class="search-container">
+                <form method="GET" class="search-form">
+                    <input type="text" name="q" value="{{query}}" class="search-input" placeholder="Search...">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+
+                </form>
+              
+            </div>
+
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" class="nav-icon"><i class="fas fa-headset"></i> Support</a>
+                <a href="#" class="nav-icon"><i class="fas fa-hand-holding-heart"></i> Donate</a>
+                <a href="#" class="nav-icon"><i class="fa-sharp-duotone fa-solid fa-crown fa-flip-horizontal fa-xl" style="--fa-primary-color: #dceb14; --fa-secondary-color: #dceb14;"></i> Premium</a>
+                <a href="#" class="nav-icon"><i class="fas fa-lightbulb"></i> Share Idea</a>
+                
+                
+            </div>
+        </div>
+    </nav>
+
+    <div class="showcase" id="showcase">
+        <!-- Showcase items will be dynamically loaded here -->
+    </div>
+
+    <div class="services">
+        <div class="service-card">
+            <i class="fas fa-question-circle service-icon"></i>
+            <h3 class="service-title">Quiz</h3>
+            <p class="service-description">Test your knowledge with interactive quizzes</p>
+        </div>
+        <div class="service-card">
+            <i class="fas fa-users service-icon"></i>
+            <h3 class="service-title">Groups</h3>
+            <p class="service-description">Join study groups and collaborate</p>
+        </div>
+        <div class="service-card">
+            <i class="fas fa-laptop-code service-icon"></i>
+            <h3 class="service-title">Programs</h3>
+            <p class="service-description">Access educational programs</p>
+        </div>
+        <div class="service-card">
+            <i class="fas fa-vote-yea service-icon"></i>
+            <h3 class="service-title">Vote & Polls</h3>
+            <p class="service-description">Participate in community decisions</p>
+        </div>
+        <div class="service-card">
+            <i class="fas fa-flask service-icon"></i>
+            <h3 class="service-title">Practicals</h3>
+            <p class="service-description">Hands-on learning experiences</p>
+        </div>
+        <div class="service-card">
+            <i class="fas fa-chart-line service-icon"></i>
+            <h3 class="service-title">Graph Sketching</h3>
+            <p class="service-description">Visual mathematical tools</p>
+        </div>
+    </div>
+    <div class="contributors">
+        <h2>Our Contributors</h2>
+        <ul>
+            {% for contributor in contributors %}
+            <li>
+                {% if contributor.photo %}
+                <img src="{{ contributor.photo.url }}" alt="{{ contributor.user.username }}'s profile picture" width="100">
+                {% else %}
+                <p>No profile photo</p>
+                {% endif %}
+                <h3>{{ contributor.user.username }}</h3>
+                <p>{{ contributor.bio }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>YourSiteName - Empowering education through technology</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> +1234567890</p>
+                    <p><i class="fas fa-envelope"></i> info@yoursite.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Education St, City</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Mobile menu toggle
+            $('.menu-toggle').click(function() {
+                $('.nav-links').toggleClass('active');
+            });
+
+            // Showcase slider functionality
+            const showcaseItems = [
+                { type: 'image', src: '{% static "img/showcase1.jpg" %}' },
+                { type: 'image', src: '{% static "img/showcase2.jpg" %}' },
+                { type: 'video', src: '{% static "videos/showcase1.mp4" %}' }
+            ];
+
+            let currentItem = 0;
+
+            function createShowcaseItem(item) {
+                const div = $('<div>').addClass('showcase-item');
+                if (item.type === 'image') {
+                    $('<img>').attr('src', item.src).appendTo(div);
+                } else {
+                    $('<video autoplay muted>').attr('src', item.src).appendTo(div);
+                }
+                return div;
+            }
+
+            function showNextItem() {
+                $('.showcase-item').removeClass('active');
+                currentItem = (currentItem + 1) % showcaseItems.length;
+                $('.showcase-item').eq(currentItem).addClass('active');
+            }
+
+            // Initialize showcase
+            showcaseItems.forEach(item => {
+                const element = createShowcaseItem(item);
+                $('#showcase').append(element);
+            });
+            $('.showcase-item').first().addClass('active');
+
+            // Auto-rotate showcase items
+            setInterval(showNextItem, 30000);
+        });
+    </script>
+</body>
+</html>

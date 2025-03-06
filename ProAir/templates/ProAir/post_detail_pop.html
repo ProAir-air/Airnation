@@ -1,0 +1,135 @@
+<!-- post_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Details</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .post-details {
+            margin-bottom: 40px;
+        }
+        .post-details h2 {
+            margin-bottom: 10px;
+        }
+        .post-details p {
+            margin: 5px 0;
+        }
+        .user-lists {
+            margin-bottom: 20px;
+        }
+        .user-lists h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Post Details</h1>
+
+    <!-- Post Details -->
+    <div class="post-details">
+        <h2>{{ post.title }}</h2>
+        <p><strong>Author:</strong> {{ post.author.username }}</p>
+        <p><strong>Description:</strong> {{ post.description }}</p>
+        <p><strong>Category:</strong> {{ post.category }}</p>
+        <p><strong>Timestamp:</strong> {{ post.timestamp }}</p>
+    </div>
+
+    <!-- User Interaction Statistics -->
+    <div class="user-interaction-stats">
+        <h2>User Interaction Statistics</h2>
+        <p><strong>Total Shown:</strong> {{ post.interaction_stats.total_shown }}</p>
+        <p><strong>Total Closed:</strong> {{ post.interaction_stats.total_closed }}</p>
+        <p><strong>Total Clicked:</strong> {{ post.interaction_stats.total_clicked }}</p>
+        <p><strong>Total Auto-closed:</strong> {{ post.interaction_stats.total_auto_closed }}</p>
+    </div>
+
+    <!-- User Lists -->
+    <div class="user-lists">
+        <h3>Users Who Saw the Pop-up</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interaction in users_seen %}
+                <tr>
+                    <td>{{ interaction.user.username }}</td>
+                    <td>{{ interaction.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Users Who Closed the Pop-up</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interaction in users_closed %}
+                <tr>
+                    <td>{{ interaction.user.username }}</td>
+                    <td>{{ interaction.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Users Who Clicked the Pop-up</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interaction in users_clicked %}
+                <tr>
+                    <td>{{ interaction.user.username }}</td>
+                    <td>{{ interaction.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Users Who Waited Until Auto-close</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interaction in users_auto_closed %}
+                <tr>
+                    <td>{{ interaction.user.username }}</td>
+                    <td>{{ interaction.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

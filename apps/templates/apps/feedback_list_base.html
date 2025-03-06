@@ -1,0 +1,332 @@
+{# apps/feedback_list_base.html #}
+{% extends 'ProAir/base_admin.html' %}
+{% block title %}{{ section_title }} - Air Nation Music{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ section_title }}</h2>
+    
+    <div class="stats-overview">
+        <div class="stat-card">
+            <h3>Unresponded</h3>
+            <p class="stat-number">{{ unresponded_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Responded</h3>
+            <p class="stat-number">{{ responded_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total</h3>
+            <p class="stat-number">{{ total_feedback }}</p>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="{% url 'apps:unresponded_feedback' %}" class="nav-link">View Unresponded</a>
+        <a href="{% url 'apps:responded_feedback' %}" class="nav-link">View Responded</a>
+        <a href="{% url 'apps:all_feedback' %}" class="nav-link">View All</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Type</th>
+                <th>User</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created On</th>
+                <th>Response</th>
+                <th>Action</th>
+                <th>Response</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in feedbacks %}
+                <tr data-feedback-id="{{ feedback.id }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ feedback.subject }}</td>
+                    <td>{{ feedback.get_feedback_type_display }}</td>
+                    <td>{{ feedback.user.username|default:"Anonymous" }}</td>
+                    <td>{{ feedback.description|truncatewords:30 }}</td>
+                    <td>{{ feedback.get_priority_display }}</td>
+                    <td>{{ feedback.get_status_display }}</td>
+                    <td>{{ feedback.created_at|date:"F j, Y, g:i a" }}</td>
+                    <td class="response-cell">
+                        {% with public_response=feedback.responses.filter|first %}
+                            {% if public_response %}
+                                <div class="response-text">{{ public_response.response }}</div>
+                            {% else %}
+                                <span class="no-response">No response yet</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <button class="respond-btn btn-primary" onclick="openResponseModal({{ feedback.id }})">
+                            {% if feedback.responses.exists %}Edit Response{% else %}Respond{% endif %}
+                        </button>
+                    </td>
+                    <td>
+                        {% if feedback.responses.exists %}
+                            <span class="responded">✅ Responded</span>
+                        {% else %}
+                            <span class="not-responded">❌ Not Responded</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if feedback.responses.filter|first %}
+                            <span class="responded">✅ Responded</span>
+                        {% else %}
+                            <span class="not-responded">❌ Not Responded</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="10" style="text-align: center;">No feedback found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Response Modal -->
+<div id="responseModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Respond to Feedback</h3>
+        <form id="responseForm">
+            <input type="hidden" id="feedbackId">
+            <div class="form-group">
+                <label for="responseText">Your Response:</label>
+                <textarea id="responseText" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="isInternal">
+                    Internal Note (only visible to staff)
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="statusSelect">Update Status:</label>
+                <select id="statusSelect" class="form-control">
+                    <option value="NEW">New</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="REJECTED">Rejected</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Submit Response</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .stats-overview {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+        min-width: 200px;
+    }
+
+    .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin: 10px 0;
+    }
+
+    .nav-links {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .nav-link {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-left: 10px;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 500px;
+        max-width: 90%;
+    }
+
+    .close {
+        float: right;
+        cursor: pointer;
+        font-size: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let currentFeedbackId = null;
+
+function openResponseModal(feedbackId) {
+    currentFeedbackId = feedbackId;
+    
+    // Clear previous data
+    $('#responseText').val('');
+    $('#isInternal').prop('checked', false);
+    
+    // Get existing response data if any
+    $.get(`/apps/feedback/${feedbackId}/responses/`, function(data) {
+        if (data.responses && data.responses.length > 0) {
+            const lastResponse = data.responses[0];
+            $('#responseText').val(lastResponse.response);
+            $('#isInternal').prop('checked', lastResponse.is_internal);
+            $('#statusSelect').val(data.status);
+        }
+        $('#responseModal').show();
+    });
+}
+
+$(document).ready(function() {
+    // Close modal
+    $('.close').click(function() {
+        $('#responseModal').hide();
+    });
+
+    // Handle form submission
+    $('#responseForm').submit(function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            response: $('#responseText').val(),
+            is_internal: $('#isInternal').is(':checked'),
+            status: $('#statusSelect').val()
+        };
+
+        $.ajax({
+            url: `/apps/feedback/${currentFeedbackId}/respond/`,
+            method: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(response) {
+                // Update the table cell with new response
+                const row = $(`tr[data-feedback-id="${currentFeedbackId}"]`);
+                if (!formData.is_internal) {
+                    row.find('.response-cell').html(
+                        `<div class="response-text">${formData.response}</div>`
+                    );
+                }
+                
+                // Update the status cell
+                row.find('td:nth-child(7)').text(
+                    $('#statusSelect option:selected').text()
+                );
+                
+                // Close the modal
+                $('#responseModal').hide();
+                
+                // Optional: Show success message
+                alert('Response saved successfully!');
+            },
+            error: function(xhr) {
+                alert('Error saving response. Please try again.');
+            }
+        });
+    });
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

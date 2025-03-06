@@ -1,0 +1,232 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+{% block content %}
+   <style>
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .profile-update-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .profile-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .photo-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .photo-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .no-photo {
+        color: #666;
+        text-align: center;
+    }
+
+    .photo-label {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        background: #f0f0f0;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .photo-input {
+        display: none;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    textarea {
+        min-height: 100px;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    .contributor-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .submit-btn {
+        background: #007bff;
+        color: white;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background-color 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #0056b3;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+   </style>
+
+    <div class="profile-update-container">
+        <form class="profile-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h1 class="form-title">Update Your Profile</h1>
+    
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="photo-upload">
+                <div class="photo-preview" id="photoPreview" 
+                    {% if profile.photo %}
+                    style="background-image: url('{{ profile.photo.url }}')"
+                    {% endif %}>
+                    {% if not profile.photo %}
+                    <div class="no-photo">No photo uploaded</div>
+                    {% endif %}
+                </div>
+                <label class="photo-label">
+                    <i class="fas fa-camera"></i> Change Photo
+                    <input type="file" name="photo" class="photo-input" id="photoInput" accept="image/*">
+                </label>
+                {% if form.photo.errors %}
+                <div class="error-message">
+                    {{ form.photo.errors }}
+                </div>
+                {% endif %}
+            </div>
+    
+            <div class="form-group">
+                <label for="id_bio">
+                    <i class="fas fa-pen"></i> Bio
+                </label>
+                <textarea name="bio" id="id_bio" class="form-control">{{ form.bio.value|default:'' }}</textarea>
+                {% if form.bio.errors %}
+                <div class="error-message">
+                    {{ form.bio.errors }}
+                </div>
+                {% endif %}
+            </div>
+    
+            <div class="contributor-check">
+                <input type="checkbox" 
+                       name="is_contributor" 
+                       id="id_is_contributor" 
+                       {% if form.is_contributor.value %}checked{% endif %}>
+                <label for="id_is_contributor">
+                    <i class="fas fa-star"></i> Contributor Status
+                </label>
+                {% if form.is_contributor.errors %}
+                <div class="error-message">
+                    {{ form.is_contributor.errors }}
+                </div>
+                {% endif %}
+            </div>
+    
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-save"></i> Update Profile
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const photoInput = document.getElementById('photoInput');
+            const photoPreview = document.getElementById('photoPreview');
+        
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoPreview.style.backgroundImage = `url('${e.target.result}')`;
+                        photoPreview.innerHTML = ''; // Clear any "No photo" text
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+        </script>
+{% endblock %}

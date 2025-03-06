@@ -1,0 +1,602 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Air Nation Music{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            color: #ffffff;
+            z-index: 1000;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .toggle-sidebar {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 20px;
+            display: none;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .logo-section img {
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .logo-section h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 71px; /* height of header */
+            bottom: 0;
+            width: 250px;
+            background: #1a1a1a;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .logo-section img {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 50%;
+        }
+
+        .logo-section h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .header-icons {
+            background: #2a2a2a;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .header-icons::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .header-icons::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .header-icons::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 2px;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .icon-item:hover {
+            background: #333;
+            border-radius: 8px;
+        }
+
+        .icon-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .icon-item span {
+            font-size: 12px;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: #1a1a1a;
+            color: #ffffff;
+            position: fixed;
+            left: 0;
+            top: 120px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .toggle-sidebar {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .logo-section {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            main {
+                margin-left: 0 !important;
+            }
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+
+        .nav-item:hover {
+            background: #333;
+        }
+
+        .nav-item > span {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sub-menu {
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .nav-item.active .sub-menu {
+            max-height: 200px;
+        }
+
+        .sub-menu a {
+            display: block;
+            padding: 8px 0;
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .sub-menu a:hover {
+            color: #ffffff;
+        }
+
+        main {
+            margin-left: 280px;
+            margin-top: 120px;
+            padding: 20px;
+        }
+
+        .nav-item span i:first-child {
+            margin-right: 8px;
+        }
+
+        .nav-item span i:last-child {
+            margin-left: 8px;
+        }
+
+        .sub-menu a i {
+            margin-right: 8px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Footer styles */
+        footer {
+            margin-left: 280px;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .footer-section {
+            margin-bottom: 20px;
+        }
+
+        .footer-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            footer {
+                margin-left: 0;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="main-header">
+            <div class="toggle-sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="logo-section">
+                {% if logo_image %}
+                <img src="{% static 'logo/logo.jpg' %}" alt="Aplus Logo">
+                {% else %}
+                <img src="{% static 'logo/logo.jpg' %}" alt="Aplus Logo">
+                {% endif %}
+                <h1>Air Nation Music</h1>
+            </div>
+        </div>
+        </div>
+        <div class="header-icons">
+            <div class="icon-item">
+                <a href="{% url 'apps:app_list' %}">
+                    <i class="fas fa-list"></i>
+                    <span>App List</span>
+                </a>
+            </div>
+
+            <div class="icon-item">
+                <a href="{% url 'ProAir:admin_overview' %}">
+                    <i class="fas fa-user-shield"></i>
+                <span>Admin Panel</span>
+                </a>
+                
+            </div>
+
+            <div class="icon-item">
+                <a href="{% url 'ProAir:admin_app_list' %}">
+                    <i class="fas fa-th"></i>
+                    <span>All Apps</span>
+                </a>
+            </div>
+
+            <div class="icon-item">
+                <a href="{% url 'apps:app_upload' %}">
+                    <i class="fas fa-upload"></i> Upload
+                </a>
+            </div>
+             
+            <div class="icon-item">
+                <a href="{% url 'user_list' %}">
+                    <i class="fas fa-users"></i>
+                    <span>All Users</span>
+                </a>
+            </div>
+            
+            <div class="icon-item">
+                <a href="{% url 'apps:user_apps_list' %}">
+                    <i class="fas fa-clipboard"></i>
+                    <span>My Posts</span>
+                </a>
+            </div>
+            <div class="icon-item">
+                <a href="{% url 'ProAir:search_analytics' %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="stats-text">Search Analytics</span>
+                </a>
+            </div>
+            <div class="icon-item">
+                <a href="{% url 'ProAir:app_approval' %}">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="stats-text">Approve/Ban</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="sidebar">
+        <div class="nav-item">
+            <span>
+                <i class="fas fa-bookmark text-blue-500"></i>
+                Saved
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <div class="sub-menu">
+                <a href="#"><i class="fas fa-heart text-red-500"></i> Favorite Tracks</a>
+                <a href="#"><i class="fas fa-list text-purple-500"></i> Playlists</a>
+                <a href="#"><i class="fas fa-download text-green-500"></i> Downloaded</a>
+            </div>
+        </div>
+    
+        <div class="nav-item">
+            <span>
+                <i class="fas fa-paper-plane text-blue-500"></i>
+                Request
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <div class="sub-menu">
+                <a href="{% url 'apps:all_requests' %}"></a><i class="fas fa-plus-circle text-blue-500"></i>All Request</a>
+                <a href="{% url 'apps:unresponded_requests' %}"></a><i class="fas fa-clock text-orange-500"></i> Pending Requests</a>
+                <a href="{% url 'apps:responded_requests' %}"><i class="fas fa-check-circle text-green-500"></i> Completed Requests</a>
+               
+            </div>
+        </div>
+    
+        <div class="nav-item">
+            <span>
+                <i class="fas fa-bell text-yellow-500"></i>
+                Notifications
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <div class="sub-menu">
+                <a href="#"><i class="fas fa-bell text-blue-500"></i> All Notifications</a>
+                <a href="#"><i class="fas fa-envelope text-red-500"></i> Unread</a>
+                <a href="#"><i class="fas fa-star text-yellow-500"></i> Important</a>
+            </div>
+        </div>
+    
+        <div class="nav-item">
+            <span>
+                <i class="fab fa-youtube text-red-600"></i>
+                ProAir YouTube
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <div class="sub-menu">
+                <a href="{% url 'ProAir:channel_info' %}"><i class="fab fa-youtube text-red-500"></i> Channel</a>
+                <a href="{% url 'ProAir:video_list' %}"></a><i class="fas fa-play-circle text-red-400"></i> Videos</a>
+                <a href="{% url 'ProAir:playlist_list'%}"></a><i class="fas fa-chart-line text-blue-500"></i>Playlists</a>
+            </div>
+        </div>
+    
+        <div class="nav-item">
+            <span>
+                <i class="fas fa-comment-dots text-purple-500"></i>
+                Feedback
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <div class="sub-menu">
+                <a href="#"><i class="fas fa-comment text-purple-500"></i> Submit Feedback</a>
+                <a href="#"><i class="fas fa-comments text-blue-500"></i> View Responses</a>
+                <a href="#"><i class="fas fa-life-ring text-teal-500"></i> Support</a>
+            </div>
+        </div>
+    
+    </nav>
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul>
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Copyright Info</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Air Nation Music. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="toggle-sidebar" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+    
+<script>   
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const wasActive = this.classList.contains('active');
+            const chevronIcon = this.querySelector('span i:last-child');
+            
+            // Close all other active items
+            document.querySelectorAll('.nav-item').forEach(otherItem => {
+                otherItem.classList.remove('active');
+                const otherChevronIcon = otherItem.querySelector('span i:last-child');
+                otherChevronIcon.classList.remove('fa-chevron-down');
+                otherChevronIcon.classList.add('fa-chevron-right');
+            });
+    
+            // Toggle current item
+            if (!wasActive) {
+                this.classList.add('active');
+                chevronIcon.classList.remove('fa-chevron-right');
+                chevronIcon.classList.add('fa-chevron-down');
+            } else {
+                chevronIcon.classList.remove('fa-chevron-down');
+                chevronIcon.classList.add('fa-chevron-right');
+            }
+        });
+    });
+</script>
+    <script>
+    // Sidebar toggle functionality
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const isActive = sidebar.classList.contains('active');
+    
+    if (window.innerWidth <= 768) {
+        sidebar.style.transform = isActive ? 'translateX(-100%)' : 'translateX(0)';
+    }
+    sidebar.classList.toggle('active');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.toggle-sidebar');
+    
+    if (window.innerWidth <= 768 && 
+        !sidebar.contains(event.target) && 
+        !toggleBtn.contains(event.target) && 
+        sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        sidebar.style.transform = 'translateX(-100%)';
+    }
+});
+
+// Handle window resize
+function handleResize() {
+    const sidebar = document.querySelector('.sidebar');
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove('active');
+        sidebar.style.transform = '';
+    } else {
+        if (!sidebar.classList.contains('active')) {
+            sidebar.style.transform = 'translateX(-100%)';
+        }
+    }
+}
+</script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

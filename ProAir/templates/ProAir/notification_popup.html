@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .notification-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-content {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .notification-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+
+        .notification-text {
+            flex-grow: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: #ff4444;
+        }
+
+        /* Placeholder image style when no thumbnail */
+        .placeholder-thumbnail {
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .placeholder-thumbnail i {
+            font-size: 24px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div id="notification-popup" class="notification-popup">
+        <div class="notification-content" onclick="handleNotificationClick()">
+            {% if notification.thumbnail %}
+            <img src="{{ notification.thumbnail }}" alt="Notification thumbnail" class="notification-thumbnail">
+            {% else %}
+            <div class="placeholder-thumbnail">
+                <i class="fas fa-bell"></i>
+            </div>
+            {% endif %}
+            <div class="notification-text">
+                <h3 class="notification-title">{{ notification.title }}</h3>
+            </div>
+            <button class="close-button" onclick="closeNotification(event)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Show notification when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('notification-popup');
+            if (popup) {
+                popup.style.display = 'block';
+            }
+        });
+
+        // Handle notification click
+        function handleNotificationClick() {
+            const notificationId = '{{ notification.id }}';
+            window.location.href = `/app/${notificationId}/`;
+        }
+
+        // Handle close button click
+        function closeNotification(event) {
+            event.stopPropagation(); // Prevent triggering the parent click event
+            const popup = document.getElementById('notification-popup');
+            popup.style.display = 'none';
+
+            // Send close interaction to backend
+            const notificationId = '{{ notification.id }}';
+            const csrfToken = '{{ csrf_token }}';
+            
+            fetch('/close-notification/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: `notification_id=${notificationId}`
+            });
+        }
+    </script>
+</body>
+</html>

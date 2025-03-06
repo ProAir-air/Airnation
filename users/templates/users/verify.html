@@ -1,0 +1,171 @@
+<!-- templates/users/verify.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            width: 80%; /* Adjust width as needed */
+            max-width: 800px; /* Set a maximum width */
+            justify-content: center; /* Center horizontally */
+        }
+
+        .logo {
+            max-width: 150px; /* Adjust as needed */
+            margin-right: 20px; 
+        }
+
+        .logo img {
+            max-width: 100%;
+        }
+
+        .website-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+                width: 100%; /* Full width on smaller screens */
+            }
+            .logo {
+                margin-bottom: 10px; /* Add spacing below logo */
+                margin-right: 0; /* Remove margin-right */
+            }
+        }
+
+     /* Style for the rest of the page content */
+     .content {
+            padding: 20px;
+            text-align: center; /* Center content horizontally */
+            width: 80%; /* Adjust width as needed */
+            max-width: 800px; /* Set a maximum width */
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .verification-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .digit-input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            color: #666;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="YourSiteName Logo">
+        </div>
+        <div class="website-name">YourSiteName</div>
+    </header>
+    
+    <div class="container">
+        <h2>Email Verification</h2>
+        <p class="message">Please enter the 6-digit code sent to your email</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="verification-input">
+                <input type="text" class="digit-input" maxlength="1" name="digit1">
+                <input type="text" class="digit-input" maxlength="1" name="digit2">
+                <input type="text" class="digit-input" maxlength="1" name="digit3">
+                <input type="text" class="digit-input" maxlength="1" name="digit4">
+                <input type="text" class="digit-input" maxlength="1" name="digit5">
+                <input type="text" class="digit-input" maxlength="1" name="digit6">
+                <input type="hidden" name="verification_code" id="verification_code">
+            </div>
+            
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+            
+            <button type="submit" class="submit-btn">Verify</button>
+            <button type="submit" name="resend_code" class="submit-btn" style="background-color: #6c757d;">Resend Code</button>
+        </form>
+    </div>
+
+    <script>
+        // Auto-focus next input
+        const inputs = document.querySelectorAll('.digit-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Combine digits before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const code = Array.from(inputs).map(input => input.value).join('');
+            document.getElementById('verification_code').value = code;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    /* Profile Header Styles */
+    .profile-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .default-avatar {
+        width: 100%;
+        height: 100%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4rem;
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-info h1 {
+        margin: 0;
+        font-size: 2rem;
+        color: #1f2937;
+    }
+
+    .contributor-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        margin: 1rem 0;
+        font-size: 0.875rem;
+    }
+
+    .bio {
+        margin: 1rem 0;
+        color: #4b5563;
+        line-height: 1.6;
+    }
+
+    .edit-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #f3f4f6;
+        color: #374151;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .edit-button:hover {
+        background: #e5e7eb;
+    }
+
+    /* Apps Grid Styles */
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .app-card {
+        background: white;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .app-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .app-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .default-thumbnail {
+        width: 100%;
+        height: 150px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #9ca3af;
+    }
+
+    .app-card h3 {
+        padding: 1rem;
+        margin: 0;
+        font-size: 1rem;
+        color: #1f2937;
+    }
+
+    .view-count {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 1rem 1rem;
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    /* Section Styles */
+    section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    section h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0 1.5rem;
+        color: #1f2937;
+        font-size: 1.5rem;
+    }
+
+    .no-items {
+        text-align: center;
+        color: #6b7280;
+        padding: 2rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+        }
+
+        .apps-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-container {
+            padding: 1rem 0.5rem;
+        }
+
+        section {
+            padding: 1rem;
+        }
+
+        .apps-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .app-card img,
+        .default-thumbnail {
+            height: 120px;
+        }
+    }
+</style>
+
+    
+<div class="profile-container">
+    <!-- Basic Information Section -->
+    <section class="profile-header">
+        <div class="profile-image">
+            {% if profile.photo %}
+                <img src="{{ profile.photo.url }}" alt="{{ profile.user.username }}'s profile picture">
+            {% else %}
+                <div class="default-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h1>{{ profile.user.username }}</h1>
+            {% if profile.is_contributor %}
+                <span class="contributor-badge">
+                    <i class="fas fa-star"></i> Contributor
+                </span>
+            {% endif %}
+            <p class="bio">{{ profile.bio|default:"No bio available" }}</p>
+            {% if is_owner %}
+                <a href="{% url 'update_profile' %}" class="edit-button">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+
+         
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Saved Apps Section -->
+    <section class="saved-apps">
+        <h2><i class="fas fa-bookmark"></i> Saved Apps</h2>
+        <div class="apps-grid">
+            {% for saved in saved_apps %}
+                <div class="app-card">
+                    {% if saved.app.thumbails %}
+                        <img src="{{ saved.app.thumbails.url }}" alt="{{ saved.app.title }}">
+                    {% else %}
+                        <div class="default-thumbnail">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                    {% endif %}
+                    <h3>{{ saved.app.title }}</h3>
+                </div>
+            {% empty %}
+                <p class="no-items">No saved apps yet</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Top Apps Recommendations -->
+    <section class="recommendations">
+        <h2><i class="fas fa-fire"></i> Popular Apps</h2>
+        <div class="apps-grid">
+            {% for app in top_apps %}
+                <div class="app-card">
+                    {% if app.thumbails %}
+                        <img src="{{ app.thumbails.url }}" alt="{{ app.title }}">
+                    {% else %}
+                        <div class="default-thumbnail">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                    {% endif %}
+                    <h3><a href="{% url 'apps:app_detail' app.pk %}">{{ app.title }}</a></h3> 
+                    <span class="view-count">
+                        <i class="fas fa-eye"></i> {{ app.total_views }} views
+                    </span>
+                </div>
+            {% empty %}
+                <p class="no-items">No recommendations available</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% endblock %}

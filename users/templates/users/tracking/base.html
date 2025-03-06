@@ -1,0 +1,324 @@
+{% extends 'ProAir/base_admin.html' %}
+{% load custom_filters_admin %}
+{% block content %}
+<style>
+/* Main Layout */
+/* Main Layout */
+.content {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+}
+
+
+
+/* Analytics Content */
+.analytics {
+    flex: 1;
+    padding: 30px;
+}
+
+.analytics-title {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Stats Cards */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    font-size: 28px;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    margin-top: 8px;
+}
+
+/* Tables Styling */
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.table-title {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 20px;
+    text-align: left;
+    border: 1px solid #dee2e6;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Visits by Date Section */
+.date-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.date-header {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .analytics {
+        padding: 15px;
+    }
+    
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+/* Table Scroll for Mobile */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Additional Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+/* Status Code Colors */
+.status-success {
+    color: #27ae60;
+}
+
+.status-error {
+    color: #e74c3c;
+}
+
+.status-warning {
+    color: #f39c12;
+}
+</style>
+    <header class="header">
+        <nav class="sidebar">
+            {% block sidebar %}
+            <ul>
+                
+                <li><a href="{% url 'one_day_analytics' %}">1 Day Analytics</a></li>
+                <li><a href="{% url 'two_day_analytics' %}">2 Days Analytics</a></li>
+                <li><a href="{% url 'three_day_analytics' %}">3 Days Analytics</a></li>
+                <li><a href="{% url 'four_day_analytics' %}">4 Days Analytics</a></li>
+                <li><a href="{% url 'five_day_analytics' %}">5 Days Analytics</a></li>
+                <li><a href="{% url 'six_day_analytics' %}">6 Days Analytics</a></li>
+                <li><a href="{% url 'one_week_analytics' %}">1 Week Analytics</a></li>
+                <li><a href="{% url 'two_week_analytics' %}">2 Weeks Analytics</a></li>
+                <li><a href="{% url 'three_week_analytics' %}">3 Weeks Analytics</a></li>
+                <li><a href="{% url 'one_month_analytics' %}">1 Month Analytics</a></li>
+                <li><a href="{% url 'two_month_analytics' %}">2 Months Analytics</a></li>
+                <li><a href="{% url 'three_month_analytics' %}">3 Months Analytics</a></li>
+                <li><a href="{% url 'four_month_analytics' %}">4 Months Analytics</a></li>
+                <li><a href="{% url 'five_month_analytics' %}">5 Months Analytics</a></li>
+                <li><a href="{% url 'six_month_analytics' %}">6 Months Analytics</a></li>
+                <li><a href="{% url 'seven_month_analytics' %}">7 Months Analytics</a></li>
+                <li><a href="{% url 'eight_month_analytics' %}">8 Months Analytics</a></li>
+                <li><a href="{% url 'nine_month_analytics' %}">9 Months Analytics</a></li>
+                <li><a href="{% url 'ten_month_analytics' %}">10 Months Analytics</a></li>
+                <li><a href="{% url 'eleven_month_analytics' %}">11 Months Analytics</a></li>
+                <li><a href="{% url 'one_year_analytics' %}">1 Year Analytics</a></li>
+            </ul>
+            {% endblock %}
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block analytics %}
+        <div class="analytics-container">
+            <h1>{{ title }}</h1>
+
+            <!-- Overall Statistics -->
+            <table class="stats-table">
+                <tr>
+                    <td>
+                        <i class="fas fa-users"></i>
+                        <div class="stat-number">{{ total_users }}</div>
+                        <div class="stat-label">Total Users</div>
+                    </td>
+                    <td>
+                        <i class="fas fa-user-check"></i>
+                        <div class="stat-number">{{ total_authenticated_users }}</div>
+                        <div class="stat-label">Authenticated Users</div>
+                    </td>
+                    <td>
+                        <i class="fas fa-user-secret"></i>
+                        <div class="stat-number">{{ total_anonymous_users }}</div>
+                        <div class="stat-label">Anonymous Users</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fas fa-eye"></i>
+                        <div class="stat-number">{{ total_pages_visited }}</div>
+                        <div class="stat-label">Total Page Visits</div>
+                    </td>
+                    <td>
+                        <i class="fas fa-file-alt"></i>
+                        <div class="stat-number">{{ total_unique_pages }}</div>
+                        <div class="stat-label">Unique Pages Visited</div>
+                    </td>
+                    <td>
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-number">{{ total_time_spent|format_time}}</div>
+                        <div class="stat-label">Total Time Spent</div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Most Visited Pages -->
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Most Visited Pages</h2>
+            <table class="pages-table">
+                <thead>
+                    <tr>
+                        <th>Page</th>
+                        <th>Visit Count</th>
+                        <th>Total Time Spent</th>
+                        <th>First Visit</th>
+                        <th>Last Visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in most_visited_pages %}
+                    <tr>
+                        <td>{{ page.page_url }}</td>
+                        <td>{{ page.visit_count }}</td>
+                        <td>{{ page.total_time|format_time }}</td>
+                        <td>{{ page.first_visit }}</td>
+                        <td>{{ page.last_visit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Least Visited Pages -->
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Least Visited Pages</h2>
+            <table class="pages-table">
+                <thead>
+                    <tr>
+                        <th>Page</th>
+                        <th>Visit Count</th>
+                        <th>Total Time Spent</th>
+                        <th>First Visit</th>
+                        <th>Last Visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in least_visited_pages %}
+                    <tr>
+                        <td>{{ page.page_url }}</td>
+                        <td>{{ page.visit_count }}</td>
+                        <td>{{ page.total_time|format_time }} </td>
+                        <td>{{ page.first_visit }}</td>
+                        <td>{{ page.last_visit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Date-Categorized Visits -->
+            <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Visits by Date</h2>
+            {% for date, visits in date_categorized_visits.items %}
+            <h3>{{ date }}</h3>
+            <table class="pages-table">
+                <thead>
+                    <tr>
+                        <th>Page URL</th>
+                        <th>Time Spent</th>
+                        <th>Timestamp</th>
+                        <th>Method</th>
+                        <th>Status Code</th>
+                        <th>User Agent</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <td>{{ visit.page_url }}</td>
+                        <td>{{ visit.duration|format_time}}</td>
+                        <td>{{ visit.timestamp }}</td>
+                        <td>{{ visit.method }}</td>
+                        <td>{{ visit.status_code }}</td>
+                        <td>{{ visit.user_agent }}</td>
+                        <td>{{ visit.ip_address }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+        {% endblock %}
+    </main>
+    {% endblock  %}
+
+

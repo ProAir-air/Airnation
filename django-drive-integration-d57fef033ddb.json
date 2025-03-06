@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "django-drive-integration",
+  "private_key_id": "d57fef033ddbb8b804efc12b7c3bf00adb05338f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDCafzBHKYxYTuw\nzGTZAe+zMMxRyMeI1h3gXKaNrY2NK5Cz489YjKNip4LhwG90xH/EQrcKLD06uDJo\nPt0Bq/dm11KliMK4QrphYsrkbKoPOuahAfDJZAYdKfkLWkNm8hk7zoaYOmuUwlPO\nnGSE4UhKWwnwrxpzY0Z1aAOiP22o1T7cOPf5cgsa8IGAMBfYymChxAJNpqrkJek3\nNoqmd+u9YbrN6Fa4NKWzeG5n6I5y6upPI1A0Z5ML9Qg3kzw+uCrUKeXviueQL1YI\nhzXLpk0+0uBTb7slnLsLdOvDlTqC0GWPSKWP5yKTDxjyep8tS+QPhgR3W5pQsevh\nnuqhyd2HAgMBAAECggEAFa9Yv/mAGBXuYIQL46Cxqd0RjTXF+99WKcZr1XW8SjjH\nxSjt4cSeHMzublvWksGwNqXyYLIaikgtZy9L23ng+Jmf4FLm1UKsI1yvoNb2CQja\n3K6ouu3rOKmL29ZPmlX6to8MuEIb6dXbHzqWg7PVKmYJL814N9Kk80eM0DYe9yvQ\nICB1Ts3namkSiJaqzpfLB796U3eyF1CQr3ZnwLDC2F/Qqc169A/QGLakpt2peKTS\nOomJCWdrR61j8KWyS/mTOlkoBbiFnGfKOCqdh4UxXFEHy4XPjMgPL5kWh9k4GAhY\n4qdIWq/s6sFfbCIdXoyvMEJDfJy1U4p0QkWDibFq4QKBgQDtU2Wi+/PQlbcllkKE\nh5PJQUSrTvzohkETYPFHbXlgDJTSPsH2eOLOL3a9sNY/f5R0xXYSfV0TVvFCnvjq\nuKBRjJGnrSvOAMDHRUI4pZr3+/Z4k2IIPkkg0WLowWrz+9WeSV8LPM/oVAj1zXdP\nR85m/iY4OgVcVHjnLl0l8qZR/wKBgQDRtjERE4N5VhHAtvdVE6BL44bC9wcjsD06\nIoHONzmtM1Vzvn4cZMPLB6hpAqKC1xnX0+2xmZuZlXkIsbCy0oMt9kN7Bi/qY+Mn\ndCn2szjCQyCfEDG7f3gqPkNi3KHEfLz4VjnnlLWaqzor6sFH43UF0zJrjWMP0ckZ\njAq5A9rkeQKBgEUFYCXKiNo88Irp7GaG16BMbyAzVLJ7eSmdpA5V9FrOzelnfxmj\nhrLYcvwwFd9Zx18+nlw6QXuCaaAqg9If5+BPtXzCjF7ZMTfDGMNIxo0gpkni8zva\ngYId41o2Blj3AOWMCSxHf1/eMMzr+KsCAzFI8OyhUzXLC26QuV5z95MZAoGAAvgx\neaxtECrH1ZLBrdK5UlnGbrxQvZChTVFvxRvDFVDExP7Nilli7F0PZW1EH9Yr54J4\nuysRqPsU26qodd/FO8Fg8z0DMK55aPWcIoInK5kHvTjde2oyqWZ4Tc4R/FZH1rxh\n1YWljKsgB78rPXlbDtoOvLcjz/WIg3QYMsZ7MwECgYBXcE0fkfZuk939Gz9IiwUn\nsowjuReSEAIoQTi3yCsRrJfzwofeh6r57w41SwKnY/0U5ygEX7EVt1I+mjPztMlf\nKPCLCewIqOTRpMrngL+oxf2po/rKqh9NfClL/FuL+NSzfYaAPuY3KF+iBRUgWfo6\n1gL+m59w6qBzr9NHsCbvBQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "drive-service-account@django-drive-integration.iam.gserviceaccount.com",
+  "client_id": "104706874535677884614",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/drive-service-account%40django-drive-integration.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

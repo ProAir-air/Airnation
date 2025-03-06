@@ -1,0 +1,133 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+```python
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+# ... other imports
+
+# ... (Existing ChatGroup and GroupMember models)
+
+class DeletedGroupData(models.Model):
+    # ... (Existing fields)
+    files = models.ManyToManyField('DeletedGroupFile', blank=True)  # Add a ManyToMany field for files
+
+
+class DeletedGroupFile(models.Model):
+    file = models.FileField(upload_to='deleted_group_files/')
+    original_filename = models.CharField(max_length=255)  # Store original filename
+
+
+class GroupReport(models.Model):
+    # ... (Existing fields)
+
+
+def delete_group_and_store_data(group):
+    deleted_group_data = DeletedGroupData(
+        # ... (Existing fields)
+    )
+    deleted_group_data.save()
+
+    # Save files related to the group
+    for obj in [group] + list(group.get_all_subgroups()): # Iterate over group and subgroups
+        if obj.icon:
+            deleted_file = DeletedGroupFile(file=obj.icon, original_filename=obj.icon.name)
+            deleted_file.save()
+            deleted_group_data.files.add(deleted_file)
+
+    # ... (rest of the function - deleting subgroups and group)
+
+
+# views.py
+@login_required
+def report_group(request, group_id):
+    group = get_object_or_404(ChatGroup, pk=group_id)
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        GroupReport.objects.create(group=group, reported_by=request.user, reason=reason)
+        # Add a success message or redirect
+        return redirect('group_detail', group_id=group_id)  # Replace 'group_detail' with your actual view name
+    return render(request, 'report_group.html', {'group': group})
+
+
+@login_required
+def view_reports(request):
+    if not request.user.is_staff:  # Restrict access to staff users
+        return redirect('home')  # Replace 'home' with your homepage URL name
+    reports = GroupReport.objects.all()
+    return render(request, 'view_reports.html', {'reports': reports})
+
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # ... other URL patterns
+    path('report_group/<int:group_id>/', views.report_group, name='report_group'),
+    path('view_reports/', views.view_reports, name='view_reports'),
+
+]
+
+
+# report_group.html
+<h2>Report {{ group.name }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <textarea name="reason" required></textarea>
+    <button type="submit">Submit Report</button>
+</form>
+
+
+# view_reports.html
+<h2>Group Reports</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th>Reported By</th>
+            <th>Reason</th>
+            <th>Reported At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.group.name }}</td>
+            <td>{{ report.reported_by.username }}</td>
+            <td>{{ report.reason }}</td>
+            <td>{{ report.reported_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+```
+
+
+Key changes:
+
+* **`DeletedGroupFile` model:** Stores files from deleted groups, including their original filenames.
+* **`DeletedGroupData` update:** Now has a `ManyToManyField` to `DeletedGroupFile` to store associated files.
+* **`delete_group_and_store_data` update:**  Now saves the group's icon (and any other relevant files) to the `DeletedGroupFile` model and links them to the `DeletedGroupData` instance. It iterates through the group and its subgroups to save all related files.
+* **`report_group` view:** Handles the reporting functionality.  Requires login and uses a simple form to collect the reason for the report.
+* **`view_reports` view:** Displays all reported groups. Restricts access to staff users.
+* **URL patterns:** Added URLs for `report_group` and `view_reports`.
+* **Templates:**  Added `report_group.html` and `view_reports.html` templates.
+
+
+Remember to adjust view names, URL names, and template paths to match your project's structure.  This enhanced solution now handles file storage for deleted groups and provides a complete reporting mechanism with views, URLs, and templates.  You can further customize the templates and views to fit your specific needs.

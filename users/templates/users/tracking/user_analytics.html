@@ -1,0 +1,123 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center my-4">User Activity Report</h1>
+
+    <!-- Overall Information -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-info-circle"></i> Overall Information
+        </div>
+        <div class="card-body">
+            <p><strong>Username/Session:</strong> {{ username_or_session }}</p>
+            <p><strong>Email:</strong> {{ email|default:"N/A" }}</p>
+            <p><strong>Total Pages Visited:</strong> {{ total_pages_visited }}</p>
+            <p><strong>Total Time Spent:</strong> {{ total_time_spent|floatformat:2 }} seconds</p>
+            <p><strong>First Visit:</strong> {{ first_visit }}</p>
+            <p><strong>Last Visit:</strong> {{ last_visit }}</p>
+        </div>
+    </div>
+
+    <!-- Top 5 Most Visited Pages -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <i class="fas fa-star"></i> Top 5 Most Visited Pages
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Page URL</th>
+                        <th>Visit Count</th>
+                        <th>Total Time Spent</th>
+                        <th>First Visit</th>
+                        <th>Last Visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in most_visited_pages %}
+                    <tr>
+                        <td>{{ page.page_url }}</td>
+                        <td>{{ page.count }}</td>
+                        <td>{{ page.total_time|floatformat:2 }} seconds</td>
+                        <td>{{ page.first_visit }}</td>
+                        <td>{{ page.last_visit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top 5 Least Visited Pages -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-white">
+            <i class="fas fa-exclamation-circle"></i> Top 5 Least Visited Pages
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Page URL</th>
+                        <th>Visit Count</th>
+                        <th>Total Time Spent</th>
+                        <th>First Visit</th>
+                        <th>Last Visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in least_visited_pages %}
+                    <tr>
+                        <td>{{ page.page_url }}</td>
+                        <td>{{ page.count }}</td>
+                        <td>{{ page.total_time|floatformat:2 }} seconds</td>
+                        <td>{{ page.first_visit }}</td>
+                        <td>{{ page.last_visit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Date-Categorized Visits -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <i class="fas fa-calendar-alt"></i> Visits by Date
+        </div>
+        <div class="card-body">
+            {% for date, visits in date_categorized_visits.items %}
+            <h4>{{ date }}</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Page URL</th>
+                        <th>Time Spent</th>
+                        <th>Timestamp</th>
+                        <th>Method</th>
+                        <th>Status Code</th>
+                        <th>User Agent</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <td>{{ visit.page_url }}</td>
+                        <td>{{ visit.duration|floatformat:2 }} seconds</td>
+                        <td>{{ visit.timestamp }}</td>
+                        <td>{{ visit.method }}</td>
+                        <td>{{ visit.status_code }}</td>
+                        <td>{{ visit.user_agent }}</td>
+                        <td>{{ visit.ip_address }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

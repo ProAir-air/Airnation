@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplus - Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            margin: auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .register-btn:hover {
+            background: #2980b9;
+        }
+
+        .password-requirements {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .auth-link {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            color: #2d3748;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-link:hover {
+            background-color: #f7fafc;
+        }
+
+        .auth-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .login-link {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3182ce;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 15px;
+            padding-top: 20px;
+        }
+
+        .reset-link {
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .auth-description {
+            font-size: 14px;
+            color: #718096;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <!-- Generated logo SVG -->
+            <svg class="logo-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#3498db"/>
+                <text x="50" y="65" font-size="50" fill="white" text-anchor="middle">A</text>
+            </svg>
+            <h1>Air Nation Music</h1>
+            <p>Make Your Sound Greater</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                <div class="error-message">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+                {% if field.name == 'password1' %}
+                <div class="password-requirements">
+                    <ul>
+                        <li>Password must be at least 8 characters long</li>
+                        <li>Must include both upper and lowercase letters</li>
+                        <li>Must include at least one number</li>
+                        <li>Must include at least one special character</li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+
+        <div class="auth-container">
+            <div>
+                <a href="{% url 'password-reset' %}" class="auth-link reset-link">
+                    <i class="fas fa-key"></i> Password Reset
+                    <div class="auth-description">Forgot your password? Reset it here</div>
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'login' %}" class="auth-link login-link">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                    <div class="auth-description">Access your account securely</div>
+                </a>
+            </div>
+        </div>
+       
+    </div>
+    
+
+    <script>
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('input');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                if (input.hasAttribute('required') && !input.value) {
+                    isValid = false;
+                    const formGroup = input.closest('.form-group');
+                    let errorDiv = formGroup.querySelector('.error-message');
+                    
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        formGroup.appendChild(errorDiv);
+                    }
+                    
+                    errorDiv.textContent = 'This field is required';
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Password strength validation
+        const passwordInput = document.querySelector('input[type="password"]');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const hasUpperCase = /[A-Z]/.test(password);
+                const hasLowerCase = /[a-z]/.test(password);
+                const hasNumbers = /\d/.test(password);
+                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+                const isLongEnough = password.length >= 8;
+
+                const requirements = document.querySelectorAll('.password-requirements li');
+                if (requirements.length) {
+                    requirements[0].style.color = isLongEnough ? '#27ae60' : '#7f8c8d';
+                    requirements[1].style.color = (hasUpperCase && hasLowerCase) ? '#27ae60' : '#7f8c8d';
+                    requirements[2].style.color = hasNumbers ? '#27ae60' : '#7f8c8d';
+                    requirements[3].style.color = hasSpecialChar ? '#27ae60' : '#7f8c8d';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block title %}Air Nation Music{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h2>Respond to Request: {{ object.request.app_name }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Response</button>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    form {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    button {
+        background: #28a745;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #218838;
+    }
+</style>
+{% endblock %}

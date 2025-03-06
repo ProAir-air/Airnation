@@ -1,0 +1,35 @@
+<div class="apps-grid">
+    {% for app in apps %}
+    <div class="app-card">
+        <div class="app-card-content">
+            <h2 class="app-title">
+                <a href="{% url 'apps:app_detail' app.id %}">{{ app.title }}</a>
+            </h2>
+            <div class="app-stats">
+                <div class="stat-item">
+                    <i class="fas fa-bookmark"></i>
+                    <span>{{ app.save_count|default:0 }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-simple"></i>
+                    <span>{{ app.view_count|default:0 }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>{{ app.download_count|default:0 }}</span>
+                </div>
+            </div>
+
+            <div class="app-actions">
+               
+               
+                <button class="action-btn save-btn {% if app.id in saved_apps %}saved{% endif %}" 
+                        data-app-id="{{ app.id }}">
+                    <i class="fas fa-bookmark"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

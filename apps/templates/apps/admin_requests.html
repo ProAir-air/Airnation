@@ -1,0 +1,121 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h2>All User Requests</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Application Name</th>
+                <th>User</th>
+                <th>Description</th>
+                <th>Phone Number</th>
+                <th>WhatsApp</th>
+                <th>Requested On</th>
+                <th>Response</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ request.app_name }}</td>
+                    <td>{{ request.user.username }}</td>
+                    <td>{{ request.description }}</td>
+                    <td>{{ request.phone_number|default:"N/A" }}</td>
+                    <td>
+                        {% if request.whatsapp_number %}
+                            <a href="{{ request.whatsapp_number }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-whatsapp"></i> Chat
+                            </a>
+                        {% else %}
+                            <a href="https://wa.me/{{ request.whatsapp_number|cut:'+' }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-whatsapp"></i> {{ request.whatsapp_number }}
+                            </a>       
+                        {% endif %}
+                    </td>
+                    <td>{{ request.timestamp|date:"F j, Y, g:i a" }}</td>
+                    <td>
+                        {% if request.adminresponse %}
+                            <span class="responded">✅ Responded</span>
+                            <br>
+                            <strong>Response:</strong> {{ request.adminresponse.response_text }}
+                        {% else %}
+                            <span class="not-responded">❌ Not Responded</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'apps:admin_respond' request.id %}" class="respond-btn">
+                            {% if request.adminresponse %} Edit Response {% else %} Respond {% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No requests found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background: #007bff;
+        color: white;
+    }
+
+    .responded {
+        color: green;
+        font-weight: bold;
+    }
+
+    .not-responded {
+        color: red;
+        font-weight: bold;
+    }
+
+    .respond-btn {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .respond-btn:hover {
+        background: #218838;
+    }
+</style>
+{% endblock %}

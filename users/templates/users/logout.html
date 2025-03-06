@@ -1,0 +1,37 @@
+{% extends 'users/base.html' %}
+
+<header class="footer bg-light text-center">
+    <div class="container">
+        <img src="logo.png" alt="YourSiteName Logo" width="50" height="50" border-radius="50%"> 
+        <p>Air Nation Music - Connecting students, schools, and institutions. Empowering education through a collaborative platform. Discover opportunities, share knowledge, and build your future with us.</p>
+    </div>
+</header>
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg text-center">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="fw-bold mb-3">Successfully Logged Out</h2>
+                    <p class="text-muted mb-4">Thank you for using YourSiteName</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Attempt to close the window or tab
+    if (!window.close()) {
+        // If closing fails, redirect to the login page after 1 second
+        setTimeout(function() {
+            window.location.href = "{% url 'login' %}";
+        }, 1000);
+    }
+</script>
+
+{% endblock %}

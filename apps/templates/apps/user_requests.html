@@ -1,0 +1,71 @@
+{% extends 'apps/base.html' %}
+{% block title %}Air Nation Music {% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h2>My Application Requests</h2>
+
+    {% for request in requests %}
+        <div class="request-box">
+            <h3>{{ request.app_name }}</h3>
+            <p><strong>Description:</strong> {{ request.description }}</p>
+            <p><strong>Requested on:</strong> {{ request.timestamp|date:"F j, Y, g:i a" }}</p>
+
+            {% if request.adminresponse and request.adminresponse.is_visible %}
+                <div class="admin-response">
+                    <h4>Admin Response:</h4>
+                    <p>{{ request.adminresponse.response_text }}</p>
+                    {% if request.adminresponse.response_link %}
+                        <p><a href="{{ request.adminresponse.response_link }}" target="_blank">Click here</a> for more details.</p>
+                    {% endif %}
+                    <p><em>Response given on {{ request.adminresponse.responded_at|date:"F j, Y, g:i a" }}</em></p>
+                </div>
+            {% else %}
+                <p><em>Admin has not responded yet.</em></p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>You have not made any requests yet.</p>
+    {% endfor %}
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    
+    .request-box {
+        background: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 5px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .admin-response {
+        background: #e9f7ef;
+        padding: 10px;
+        border-left: 4px solid green;
+        margin-top: 10px;
+        border-radius: 4px;
+    }
+
+    h2 {
+        color: #333;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

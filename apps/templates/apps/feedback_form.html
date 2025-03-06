@@ -1,0 +1,49 @@
+{% extends 'apps/base.html' %}
+{% block title %}Submit Feedback - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="feedback-container">
+    <div class="feedback-header">
+        <h2 class="text-2xl font-bold mb-4">Submit Feedback</h2>
+        <div class="feedback-message space-y-3">
+            <p class="text-gray-700 leading-relaxed">
+                Your feedback is invaluable in shaping the future of our software platform. As developers and tech enthusiasts, we understand that the best solutions come from real user experiences.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                Whether it's a bug report, feature request, or general suggestion, your insights help us create a better development environment for everyone. Share your thoughts and be part of our continuous improvement process.
+            </p>
+            <p class="text-gray-600 italic">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                Every great software update starts with feedback from users like you!
+            </p>
+        </div>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" class="feedback-form">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group mb-4">
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+            <small class="text-gray-500">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+            <div class="text-red-500 text-sm mt-1">
+                {% for error in field.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Submit Feedback
+        </button>
+    </form>
+</div>
+{% endblock %}

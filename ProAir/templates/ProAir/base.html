@@ -1,0 +1,112 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+
+        /* styles.css */
+.notification-popup {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.notification-thumbnail {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    {% if request.user.is_authenticated and request.session.notification_post %}
+    <div id="notificationPopup" class="notification-popup">
+        <div class="close-button">×</div>
+        {% with post=request.session.notification_post %}
+        {% if post.thumbnail %}
+        <img src="{{ post.thumbnail }}" class="notification-thumbnail" alt="Post thumbnail">
+        {% endif %}
+        <div class="notification-title">{{ post.title }}</div>
+        <a href="{% url 'ProAir:post_detail' post.id %}" style="display: none;" id="postLink"></a>
+        {% endwith %}
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        const popup = $('#notificationPopup');
+        const postId = '{{ request.session.notification_post.id }}';
+        let autoClosePending = true;
+
+        // Show popup after 2 seconds
+        setTimeout(() => {
+            popup.fadeIn();
+        }, 2000);
+
+        // Handle click on popup content (redirect)
+        popup.on('click', function(e) {
+            if (!$(e.target).hasClass('close-button')) {
+                autoClosePending = false;
+                $('#postLink')[0].click();
+            }
+        });
+
+        // Handle close button click
+        $('.close-button').on('click', function(e) {
+            e.stopPropagation();
+            autoClosePending = false;
+            popup.fadeOut();
+            
+            // Update statistics for manual close
+            $.post("{% url 'ProAir:update_popup_statistics' %}", {
+                action: 'close',
+                post_id: postId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            });
+        });
+
+        // Auto-close after 2 minutes
+        setTimeout(() => {
+            if (autoClosePending) {
+                popup.fadeOut();
+                
+                // Update statistics for auto-close
+                $.post("{% url 'ProAir:update_popup_statistics' %}", {
+                    action: 'auto_close',
+                    post_id: postId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                });
+            }
+        }, 120000); // 2 minutes
+    });
+    </script>
+    {% endif %}
+</body>
+</html>

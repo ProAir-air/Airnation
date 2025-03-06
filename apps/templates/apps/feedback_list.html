@@ -1,0 +1,210 @@
+{% extends 'apps/base.html' %}
+{% block title %}Feedback List - {{ block.super }}{% endblock %}
+
+{% block content %}
+<style>
+    .feedback-list-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .feedback-list-container h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e5e5;
+    }
+
+    .feedback-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .feedback-card {
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .feedback-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-header {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .feedback-type, .feedback-status {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .feedback-type {
+        background-color: #e1effe;
+        color: #1e40af;
+    }
+
+    .feedback-status {
+        background-color: #def7ec;
+        color: #046c4e;
+    }
+
+    .feedback-subject {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .feedback-description {
+        color: #4b5563;
+        line-height: 1.6;
+        flex-grow: 1;
+        margin-bottom: 1rem;
+    }
+
+    .feedback-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .feedback-date {
+        font-size: 0.875rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .feedback-meta a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #2563eb;
+        color: #fff;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: background-color 0.2s;
+    }
+
+    .feedback-meta a:hover {
+        background-color: #1d4ed8;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .pagination a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: #f3f4f6;
+        color: #4b5563;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .pagination a:hover {
+        background-color: #e5e7eb;
+        color: #1a1a1a;
+    }
+
+    .current-page {
+        padding: 0.5rem 1rem;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.25rem;
+        color: #4b5563;
+    }
+
+    @media (max-width: 640px) {
+        .feedback-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .feedback-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .pagination {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
+            text-align: center;
+        }
+    }
+</style>
+<div class="feedback-list-container">
+    <h2 class="text-2xl font-bold mb-4">Feedback List</h2>
+    
+    <div class="feedback-grid">
+        {% for feedback in feedbacks %}
+        <div class="feedback-card">
+            <div class="feedback-header">
+                <span class="feedback-type">{{ feedback.get_feedback_type_display }}</span>
+                <span class="feedback-status">{{ feedback.get_status_display }}</span>
+            </div>
+            <h3 class="feedback-subject">{{ feedback.subject }}</h3>
+            <p class="feedback-description">{{ feedback.description|truncatewords:30 }}</p>
+            <div class="feedback-meta">
+                <span class="feedback-date">{{ feedback.created_at|date }}</span>
+                <a href="{% url 'apps:feedback_detail' feedback.pk %}" class="btn btn-sm">
+                    View Details
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <p>No feedback submitted yet.</p>
+        {% endfor %}
+    </div>
+    
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+        {% endif %}
+        
+        <span class="current-page">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

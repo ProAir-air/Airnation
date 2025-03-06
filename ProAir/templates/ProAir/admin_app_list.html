@@ -1,0 +1,373 @@
+{% extends 'ProAir/base_admin.html' %}
+{% block content %}
+    <style>
+        /* Base styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Table styles */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        /* Status badges */
+        .status {
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .approved {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .banned {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        /* Alert styles */
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .alert-error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        /* Metrics */
+        .metrics {
+            display: flex;
+            gap: 12px;
+        }
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+
+    {% csrf_token %}
+    <div class="alert" id="alert" style="display: none;"></div>
+
+    <div class="container">
+   
+        <div class="table-wrapper">
+            <h1>App Management</h1>
+            <div class="stats-container">
+                <div class="stats-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span class="stats-text">Total Apps: {{ total_apps }}</span>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Status</th>
+                        <th>Metrics</th>
+                        <th>Links</th>
+                        <th>Added</th>
+                        <th>Actions</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in apps %}
+                    <tr data-app-id="{{ app.id }}">
+                        <td><a href="{% url 'ProAir:app_detail' app.id %}">{{ app.title }}</a></td>
+                        <td>{{ app.author.username }}</td>
+                        <td class="status-cell">
+                            {% if not app.banned %}
+                            <span class="status approved">
+                                <i class="fas fa-check"></i> Approved
+                            </span>
+                            {% endif %}
+                            {% if app.banned %}
+                            <span class="status banned">
+                                <i class="fas fa-ban"></i> Banned
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="metrics">
+                                <div class="metric">
+                                    <i class="fas fa-eye"></i>
+                                    {{ app.total_views }}
+                                </div>
+                                <div class="metric">
+                                    <i class="fas fa-download"></i>
+                                    {{ app.total_downloads }}
+                                </div>
+                                <div class="metric">
+                                    <i class="fas fa-bookmark"></i>
+                                    {{ app.total_saves }}
+                                </div>
+                                <div class="metric">
+                                    <i class="fas fa-star"></i>
+                                    {{ app.avg_rating|floatformat:1 }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if app.youtube_link %}
+                            <a href="{{ app.youtube_link }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            {% endif %}
+                            {% if app.google_drive_link %}
+                            <a href="{{ app.google_drive_link }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-google-drive"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                        <td>{{ app.timestamp|date:"M d, Y" }}</td>
+                        <td class="action-cell">
+                            {% if app.banned %}
+                            <button onclick="handleAction('{{ app.id }}', 'unban')" class="btn btn-success">
+                                <i class="fas fa-check"></i> Unban
+                            </button>
+                            {% else %}
+                            <button onclick="handleAction('{{ app.id }}', 'ban')" class="btn btn-warning">
+                                <i class="fas fa-ban"></i> Ban
+                            </button>
+                            {% endif %}
+                            <button onclick="showDeleteModal('{{ app.id }}')" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                        <td>
+                            <button class="copy-link-btn" data-url="{{ app.public_url }}">Copy Link</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Delete Modal -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+                <h2>Confirm Deletion</h2>
+                <p>Are you sure you want to delete this app? Enter your password to confirm:</p>
+                <input type="password" id="deletePassword" placeholder="Enter your password">
+                <button onclick="confirmDelete()">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let currentAppId = null;
+
+        function handleAction(appId, action) {
+            const row = document.querySelector(`tr[data-app-id="${appId}"]`);
+            if (!row) {
+                console.error('Row not found');
+                return;
+            }
+            
+            const buttons = row.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            $.ajax({
+                url: window.location.pathname,
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    app_id: appId,
+                    action: action
+                },
+                success: function(response) {
+                    showAlert(response.message, 'success');
+                    updateRowStatus(row, action === 'ban');
+                    buttons.forEach(btn => btn.disabled = false);
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON || {};
+                    showAlert(response.message || 'An error occurred', 'error');
+                    buttons.forEach(btn => btn.disabled = false);
+                }
+            });
+        }
+
+        function updateRowStatus(row, isBanned) {
+            const statusCell = row.querySelector('.status-cell');
+            const actionCell = row.querySelector('.action-cell');
+
+            // Update status badge
+            statusCell.innerHTML = isBanned ? 
+                '<span class="status banned"><i class="fas fa-ban"></i> Banned</span>' :
+                '<span class="status approved"><i class="fas fa-check"></i> Approved</span>';
+
+            // Update action buttons
+            const actionButtons = `
+                ${isBanned ? 
+                    '<button onclick="handleAction(\'' + row.dataset.appId + '\', \'unban\')" class="btn btn-success"><i class="fas fa-check"></i> Unban</button>' :
+                    '<button onclick="handleAction(\'' + row.dataset.appId + '\', \'ban\')" class="btn btn-warning"><i class="fas fa-ban"></i> Ban</button>'
+                }
+                <button onclick="showDeleteModal(\'' + row.dataset.appId + '\')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button>
+            `;
+            actionCell.innerHTML = actionButtons;
+        }
+
+        function showDeleteModal(appId) {
+            currentAppId = appId;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            document.getElementById('deletePassword').value = '';
+        }
+
+        function confirmDelete() {
+            const password = document.getElementById('deletePassword').value;
+            if (!password) {
+                showAlert('Please enter your password', 'error');
+                return;
+            }
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            $.ajax({
+                url: window.location.pathname,
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    app_id: currentAppId,
+                    action: 'delete',
+                    password: password
+                },
+                success: function(response) {
+                    showAlert(response.message, 'success');
+                    closeDeleteModal();
+                    const row = document.querySelector(`tr[data-app-id="${currentAppId}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s';
+                        row.style.opacity = '0';
+                        setTimeout(() => row.remove(), 300);
+                    }
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON || {};
+                    showAlert(response.message || 'An error occurred', 'error');
+                }
+            });
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+
+<script>
+    document.querySelectorAll('.copy-link-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            navigator.clipboard.writeText(url)
+                .then(() => {
+                    alert('Link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+    });
+    </script>
+
+{% endblock  %}
