@@ -33,7 +33,6 @@ GOOGLE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Initialize environment variables
 env = environ.Env(
-    DEBUG=(bool, False),
     EMAIL_USE_TLS=(bool, True),
     EMAIL_PORT=(int, 587),
     SESSION_TIMEOUT=(int, 30 * 60),  # Default: 30 minutes
