@@ -273,12 +273,15 @@ LOGIN_URL='login'
 
 # Database configuration for Heroku
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),  # Fallback to SQLite if DATABASE_URL is missing
-        conn_max_age=600,  # Optional: Improves performance by reusing database connections
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd79qhncilddje0',
+        'USER': 'ud9vt3vci0ovvm',
+        'PASSWORD': 'pcce9aee1e13b9f670a2af12368210491688919824c6466059882b55201cc59ad',
+        'HOST': 'cb5ajfjosdpmil.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
+    }
 }
-
 
 CACHES = {
     'default': {
