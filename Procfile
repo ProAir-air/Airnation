@@ -1,1 +1,0 @@
-web: gunicorn AirNation.wsgi --log-file -

@@ -201,13 +201,16 @@ WSGI_APPLICATION = 'AirNation.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',  # PostgreSQL database engine
+        'NAME': 'database-1',  # Replace with your actual database name
+        'USER': 'ProAir',  # Master username
+        'PASSWORD': 'NrwpAbcu85rWK83D%RAY',  # Master password
+        'HOST': 'database-1.cjg6ckkasyvs.eu-north-1.rds.amazonaws.com',  # RDS endpoint
+        'PORT': '5432',  # Default PostgreSQL port
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -291,4 +294,13 @@ CACHES = {
 }
 
 
-django_heroku.settings(locals())
+# AWS settings
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_SIGNATURE_NAME = env('AWS_S3_SIGNATURE_NAME')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
+AWS_S3_FILE_OVERWRITE = env('AWS_S3_FILE_OVERWRITE', default=False)
+AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', default=None)
+AWS_S3_VERIFY = env('AWS_S3_VERIFY', default=True)
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
