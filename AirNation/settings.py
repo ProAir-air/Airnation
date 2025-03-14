@@ -10,13 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import environ
 from pathlib import Path
 import os
-import django_heroku
-import dj_database_url
 from decouple import config
-import json
 from django.contrib.messages import constants as messages
 
 
@@ -31,117 +27,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 GOOGLE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Initialize environment variables
-env = environ.Env(
-    EMAIL_USE_TLS=(bool, True),
-    EMAIL_PORT=(int, 587),
-    SESSION_TIMEOUT=(int, 30 * 60),  # Default: 30 minutes
-    SECURE_HSTS_SECONDS=(int, 31536000),  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS=(bool, True),
-    SECURE_HSTS_PRELOAD=(bool, True),
-    SECURE_CONTENT_TYPE_NOSNIFF=(bool, True),
-    SECURE_BROWSER_XSS_FILTER=(bool, True),
-    X_FRAME_OPTIONS=(str, "DENY"),
-    MAX_IMAGE_SIZE=(int, 10 * 1024 * 1024),  # 10MB
-    MIN_IMAGE_DIMENSION=(int, 100),
-)
+SECRET_KEY = 'django-insecure-5lqd&c*w5r6gy8oyjl(jm@9#)qgzytxr7)$#n+un)mdnju2%jw'
 
-# Read the .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env.bool('DEBUG', default=True)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-# Allowed Hosts & CSRF Trusted Origins
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://127.0.0.1", "http://localhost"])
-CORS_ALLOWED_ORIGIN_REGEXES = [env("CORS_ALLOWED_ORIGIN_REGEXES", default=r"^https:\/\/.*\.ngrok-free\.app$")]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.ngrok-free.app','airnation-a64facd01b23.herokuapp.com','51.20.91.33']
 
-# Authentication
-LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="apps:app_list")
-LOGIN_URL = env("LOGIN_URL", default="login")
 
-# Email Configuration
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
-EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.ngrok-free\.app$"
+]
+
+# ngrok config add-authtoken 2sJlNuRSFn1F6oGykB02CV476TS_3nMLW8BfNUnE6T2xZkqjQ
+
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1","http://localhost","https://*.ngrok-free.app"]
 
 
 
-# YouTube API
-API = env("API")
-YOUTUBE_API_VERSION = env("YOUTUBE_API_VERSION", default="v3")
-YOUTUBE_API_SERVICE_NAME = env("YOUTUBE_API_SERVICE_NAME", default="youtube")
 
-# CKEditor
-CKEDITOR_UPLOAD_PATH = env("CKEDITOR_UPLOAD_PATH", default="uploads/ckeditor/")
-
-# Gemini API
-GEMINI_API_KEY = env("GEMINI_API_KEY")
-
-# Pesapal API
-PESAPAL_ENVIRONMENT = env("PESAPAL_ENVIRONMENT", default="sandbox")
-PESAPAL_CONSUMER_KEY = env("PESAPAL_CONSUMER_KEY")
-PESAPAL_CONSUMER_SECRET = env("PESAPAL_CONSUMER_SECRET")
-PESAPAL_CALLBACK_URL = env("PESAPAL_CALLBACK_URL")
-PESAPAL_IPN_URL = env("PESAPAL_IPN_URL")
-
-# Download Settings
-DOWNLOAD_SETTINGS = {
-    'MAX_DOWNLOADS': env.int("MAX_DOWNLOADS", default=2),
-    'LINK_EXPIRY_HOURS': env.int("LINK_EXPIRY_HOURS", default=24),
-    'ENABLE_IP_RESTRICTION': env.bool("ENABLE_IP_RESTRICTION", default=True),
-}
-
-
-GOOGLE_DRIVE_SETTINGS = {
-    'SERVICE_ACCOUNT_FILE': os.path.join(GOOGLE_DIR, "django-drive-integration-d57fef033ddb.json"),
-    'SCOPES': ['https://www.googleapis.com/auth/drive.file'],
-    'API_VERSION': 'v3'
-}
-
-
-
-# Session & Security Settings
-SESSION_TIMEOUT = env.int("SESSION_TIMEOUT")
-SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS")
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS")
-SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD")
-SECURE_CONTENT_TYPE_NOSNIFF = env.bool("SECURE_CONTENT_TYPE_NOSNIFF")
-SECURE_BROWSER_XSS_FILTER = env.bool("SECURE_BROWSER_XSS_FILTER")
-X_FRAME_OPTIONS = env("X_FRAME_OPTIONS")
-
-# Image Upload Settings
-ALLOWED_IMAGE_TYPES = set(env.list("ALLOWED_IMAGE_TYPES", default=["image/jpeg", "image/png", "image/tiff", "image/bmp"]))
-MAX_IMAGE_SIZE = env.int("MAX_IMAGE_SIZE")
-MIN_IMAGE_DIMENSION = env.int("MIN_IMAGE_DIMENSION")
-
-# Tracked & Excluded URLs
-TRACK_URLS = [rf"^{url}" for url in env.list("TRACK_URLS", default=[])]
-EXCLUDE_URLS = [rf"^{url}" for url in env.list("EXCLUDE_URLS", default=[])]
-
-# Static & Media Files
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-MEDIA_URL = env("MEDIA_URL", default="media/")
-MEDIA_ROOT = os.path.join(BASE_DIR, env("MEDIA_ROOT", default="media"))
-
-
-# CKEditor Configuration
-CKEDITOR_CONFIGS = json.loads(env("CKEDITOR_CONFIGS", default='{}'))
-
-# Django Message Tags
-MESSAGE_TAGS_ENV = json.loads(env("MESSAGE_TAGS", default="{}"))
-MESSAGE_TAGS = {
-    messages.ERROR: MESSAGE_TAGS_ENV.get("ERROR", "danger"),
-    messages.SUCCESS: MESSAGE_TAGS_ENV.get("SUCCESS", "success"),
-}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
@@ -158,6 +64,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'phonenumber_field',
+    'storages'
  
 ]
 
@@ -252,10 +159,14 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Change this to a different directory
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+MEDIA_URL = 'media/'
+MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
@@ -270,6 +181,67 @@ AUTH_USER_MODEL='users.CustomUser'
 LOGIN_REDIRECT_URL='apps:app_list'
 LOGIN_URL='login'
 
+
+EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER='petrosofteng@gmail.com'
+EMAIL_HOST_PASSWORD='latw eilf yckv dwll'
+
+
+# settings.py
+
+ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/tiff', 'image/bmp'}
+MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
+MIN_IMAGE_DIMENSION = 100
+
+# Track specific URLs (optional)
+TRACK_URLS = [
+    r'^/admin/',
+    r'^/accounts/', 
+    r'^/manage/',
+    r'^/practicals/', 
+    r'^/documents/',
+    r'^/programs/', 
+    r'^/groups/', 
+    r'^/vote/', 
+    r'^/quiz/', 
+    r'^/experience/', 
+    r'^/ckeditor/', 
+    r'^/new-admin/', 
+    r'^/static/',
+    r'^/media/',
+]
+
+EXCLUDE_URLS = [
+    r'^/favicon.ico',
+]
+
+# Minimum time (seconds) to consider as a new session
+SESSION_TIMEOUT = 30 * 60  # 30 minutes
+
+
+API="AIzaSyCJFxvWMfN5JORXyZ5POrrJK7kevivapmQ"
+YOUTUBE_API_VERSION='v3'
+YOUTUBE_API_SERVICE_NAME='youtube'
+
+
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['TextColor', 'BGColor'],  # Add color options
+            ['NumberedList', 'BulletedList', 'Outdent', 'Indent'],
+            ['RemoveFormat']  # Removed 'Link', 'Unlink', 'Source'
+        ],
+        'removePlugins': 'image, uploadfile',  # Continue removing unwanted plugins
+        'allowedContent': True,
+    }
+}
 
 #EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"
 
@@ -295,12 +267,54 @@ CACHES = {
 
 
 # AWS settings
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_SIGNATURE_NAME = env('AWS_S3_SIGNATURE_NAME')
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
-AWS_S3_FILE_OVERWRITE = env('AWS_S3_FILE_OVERWRITE', default=False)
-AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL', default=None)
-AWS_S3_VERIFY = env('AWS_S3_VERIFY', default=True)
-DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+AWS_ACCESS_KEY_ID ="AKIARSU7LB224JMD5D24"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "airnationmusic"
+AWS_S3_SIGNATURE_NAME ="s3v4"
+AWS_S3_REGION_NAME ="eu-north-1"
+AWS_S3_FILE_OVERWRITE =False
+AWS_DEFAULT_ACL =None
+AWS_S3_VERIFY = True
+DEFAULT_FILE_STORAGE="storages.backends.s3boto3.S3Boto3Storage"
+
+
+
+CKEDITOR_UPLOAD_PATH = "uploads/ckeditor/"
+
+
+GEMINI_API_KEY = "AIzaSyBnI43Q5_7FA_3b2gxBzw64pcp0O0YRaE0"
+
+
+# Google Drive API Settings
+GOOGLE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+GOOGLE_DRIVE_SETTINGS = {
+    'SERVICE_ACCOUNT_FILE':os.path.join(GOOGLE_DIR, "django-drive-integration-d57fef033ddb.json"),
+    'SCOPES': ['https://www.googleapis.com/auth/drive.file'],
+    'API_VERSION': 'v3'
+}
+
+# Download Settings
+DOWNLOAD_SETTINGS = {
+    'MAX_DOWNLOADS': 2,
+    'LINK_EXPIRY_HOURS': 24,
+    'ENABLE_IP_RESTRICTION': True,
+
+
+}
+
+
+PESAPAL_ENVIRONMENT = "sandbox"  # or "live"
+PESAPAL_CONSUMER_KEY = "lddtCViKVHv3jUELMaos80cYSu1SrBuA"
+PESAPAL_CONSUMER_SECRET ="CTSGifWt96cy0Q4RXEFWVTpblWE="
+PESAPAL_CALLBACK_URL = "https://e594-196-44-160-11.ngrok-free.app/payment/callback/"
+PESAPAL_IPN_URL = "https://e594-196-44-160-11.ngrok-free.app/payment/ipn/"
+
+
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+    messages.SUCCESS: 'success',
+}
