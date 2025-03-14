@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from decouple import config
 from django.contrib.messages import constants as messages
 
 
@@ -43,10 +42,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 # ngrok config add-authtoken 2sJlNuRSFn1F6oGykB02CV476TS_3nMLW8BfNUnE6T2xZkqjQ
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1","http://localhost","https://*.ngrok-free.app"]
-
-
-
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1","http://localhost","https://*.ngrok-free.app", '13.51.156.88']
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -111,11 +107,11 @@ WSGI_APPLICATION = 'AirNation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # PostgreSQL database engine
-        'NAME': 'database-1',  # Replace with your actual database name
-        'USER': 'ProAir',  # Master username
-        'PASSWORD': 'NrwpAbcu85rWK83D%RAY',  # Master password
-        'HOST': 'database-1.cjg6ckkasyvs.eu-north-1.rds.amazonaws.com',  # RDS endpoint
-        'PORT': '5432',  # Default PostgreSQL port
+        'NAME': 'backendcourse',  
+        'USER': 'mysuperuser',  
+        'PASSWORD': 'mysuperuser',  
+        'HOST': 'backendcourse.cjg6ckkasyvs.eu-north-1.rds.amazonaws.com', 
+        'PORT': '5432',  
     }
 }
 
@@ -243,20 +239,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-#EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"
 
-
-# Database configuration for Heroku
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd79qhncilddje0',
-        'USER': 'ud9vt3vci0ovvm',
-        'PASSWORD': 'pcce9aee1e13b9f670a2af12368210491688919824c6466059882b55201cc59ad',
-        'HOST': 'cb5ajfjosdpmil.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
-    }
-}
 
 CACHES = {
     'default': {
@@ -267,9 +250,9 @@ CACHES = {
 
 
 # AWS settings
-AWS_ACCESS_KEY_ID ="AKIARSU7LB224JMD5D24"
-AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = "airnationmusic"
+AWS_ACCESS_KEY_ID ="AKIA6GSNGUDJN6RMOBOC"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "backend-asafu"
 AWS_S3_SIGNATURE_NAME ="s3v4"
 AWS_S3_REGION_NAME ="eu-north-1"
 AWS_S3_FILE_OVERWRITE =False
